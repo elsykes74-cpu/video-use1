@@ -16,7 +16,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [1/4] Creating virtual environment...
+echo [1/5] Creating virtual environment...
 python -m venv .venv
 if errorlevel 1 (
     echo ERROR: Could not create virtual environment.
@@ -24,7 +24,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [2/4] Installing project dependencies...
+echo [2/5] Installing project dependencies...
 call .venv\Scripts\pip install -e . --quiet
 if errorlevel 1 (
     echo ERROR: Failed to install project deps.
@@ -32,7 +32,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [3/4] Installing bot dependencies...
+echo [3/5] Installing bot dependencies...
 call .venv\Scripts\pip install -r bot\requirements.txt --quiet
 if errorlevel 1 (
     echo ERROR: Failed to install bot deps.
@@ -40,12 +40,12 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [4/4] Setting up .env file...
+echo [4/5] Setting up .env file...
 if not exist .env (
     copy .env.example .env >nul
     echo.
     echo Your .env file has been created. Opening it now...
-    echo Add your TELEGRAM_BOT_TOKEN and save the file.
+    echo Add your TELEGRAM_BOT_TOKEN and GEMINI_API_KEY, then save.
     echo Then close Notepad and come back here.
     echo.
     pause
@@ -54,12 +54,23 @@ if not exist .env (
     echo .env already exists, skipping.
 )
 
+echo [5/5] Setting up AI video pipeline (youtube-shorts-pipeline)...
+echo This installs the /generate command. It may take a few minutes...
+call .venv\Scripts\python bot\setup_verticals.py
+if errorlevel 1 (
+    echo WARNING: Pipeline setup had issues. You can re-run it later:
+    echo   .venv\Scripts\python bot\setup_verticals.py
+)
+
 echo.
 echo ================================================
 echo   Setup complete!
 echo ================================================
 echo.
 echo To start the bot, double-click  start_bot.bat
-echo Or run:  .venv\Scripts\python bot\bot.py
+echo.
+echo In Telegram, try:
+echo   /generate Elvis recorded Hound Dog in one take
+echo   /generate mj How Michael Jackson created the moonwalk
 echo.
 pause

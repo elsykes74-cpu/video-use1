@@ -28,9 +28,11 @@ Photo messages:
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -171,13 +173,17 @@ HELP_TEXT = (
     "*Send me a photo* and I'll turn it into a Ken Burns video clip.\n"
     "Caption it with an effect name and duration, e.g. `pan_right 8`\n\n"
     "*Commands:*\n"
+    "/generate [topic] — auto-generate a YouTube Short (Elvis or MJ)\n"
     "/effects — list all photo effects\n"
     "/remind HH:MM — add a daily content reminder\n"
     "/reminders — see your active reminders\n"
     "/forget HH:MM — remove a reminder\n"
     "/status — latest YouTube video stats\n"
     "/help — show this message\n\n"
-    "You'll also receive a message here whenever a video render finishes."
+    "You'll also receive a message here whenever a video render finishes.\n\n"
+    "*Generate examples:*\n"
+    "`/generate Elvis recorded Hound Dog in one take`\n"
+    "`/generate mj The making of Thriller`"
 )
 
 
@@ -373,6 +379,124 @@ async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 
 # ---------------------------------------------------------------------------
+# /generate — AI Short video pipeline (youtube-shorts-pipeline)
+# ---------------------------------------------------------------------------
+
+_MJ_KEYWORDS = {"mj", "michael jackson", "jackson 5", "thriller", "billie jean", "beat it", "moonwalk"}
+
+
+def _detect_niche(text: str) -> tuple[str, str]:
+    """Return (niche, cleaned_topic) from user input."""
+    words = text.strip().split()
+    lower = text.lower()
+
+    # Explicit override as first word
+    if words and words[0].lower() == "mj":
+        return "mj", " ".join(words[1:]) or text
+    if words and words[0].lower() == "elvis":
+        return "elvis", text  # keep "elvis" in topic for context
+
+    # Keyword detection
+    if any(k in lower for k in _MJ_KEYWORDS):
+        return "mj", text
+
+    return "elvis", text  # default
+
+
+async def _run_verticals(chat_id: int, topic: str, niche: str, bot) -> None:
+    """Run youtube-shorts-pipeline in the background and report the result."""
+    env = os.environ.copy()
+    env_file = ROOT / ".env"
+    if env_file.exists():
+        for line in env_file.read_text().splitlines():
+            if "=" in line and not line.startswith("#"):
+                k, _, v = line.partition("=")
+                env.setdefault(k.strip(), v.strip())
+
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable, "-m", "verticals", "run",
+            "--topic", topic,
+            "--niche", niche,
+            "--platform", "shorts",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            env=env,
+        )
+        try:
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=600)
+        except asyncio.TimeoutError:
+            proc.kill()
+            await bot.send_message(chat_id=chat_id, text="Generation timed out (10 min). Check your terminal.")
+            return
+
+        output = stdout.decode(errors="replace") + stderr.decode(errors="replace")
+        yt_match = re.search(r"https?://(?:youtu\.be|www\.youtube\.com)/\S+", output)
+
+        if proc.returncode == 0:
+            if yt_match:
+                await bot.send_message(
+                    chat_id=chat_id,
+                    text=f"Your Short is ready!\n{yt_match.group(0)}"
+                )
+            else:
+                await bot.send_message(
+                    chat_id=chat_id,
+                    text="Short generated! Check YouTube Studio — it was uploaded as private."
+                )
+        else:
+            tail = output[-600:]
+            await bot.send_message(
+                chat_id=chat_id,
+                text=f"Generation failed. Last output:\n{tail}"
+            )
+
+    except FileNotFoundError:
+        await bot.send_message(
+            chat_id=chat_id,
+            text=(
+                "verticals pipeline not installed.\n"
+                "Run bot/setup_verticals.py first:\n"
+                ".venv\\Scripts\\python bot\\setup_verticals.py"
+            ),
+        )
+    except Exception as e:
+        await bot.send_message(chat_id=chat_id, text=f"Unexpected error: {e}")
+
+
+async def generate_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    args = context.args
+    if not args:
+        await update.message.reply_text(
+            "*Usage:* /generate [topic]\n\n"
+            "Auto-detects Elvis or MJ from the topic.\n"
+            "Prefix with `mj` to force MJ niche.\n\n"
+            "*Examples:*\n"
+            "`/generate Elvis recorded Hound Dog in one take`\n"
+            "`/generate mj How Michael Jackson created the moonwalk`\n"
+            "`/generate The 1968 Elvis Comeback Special`",
+            parse_mode="Markdown",
+        )
+        return
+
+    topic_raw = " ".join(args)
+    niche, topic = _detect_niche(topic_raw)
+    if not topic.strip():
+        await update.message.reply_text("Please include a topic after the niche name.")
+        return
+
+    _register_chat(update.effective_chat.id)
+    await update.message.reply_text(
+        f"Generating *{niche.upper()}* Short: _{topic}_\n\n"
+        f"This takes 3–5 minutes. I'll message you when it's done.",
+        parse_mode="Markdown",
+    )
+    asyncio.create_task(
+        _run_verticals(update.effective_chat.id, topic, niche, context.bot)
+    )
+
+
+# ---------------------------------------------------------------------------
 # Startup & main
 # ---------------------------------------------------------------------------
 
@@ -393,6 +517,7 @@ def main() -> None:
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("generate", generate_command))
     app.add_handler(CommandHandler("effects", effects_command))
     app.add_handler(CommandHandler("remind", remind_command))
     app.add_handler(CommandHandler("reminders", reminders_command))

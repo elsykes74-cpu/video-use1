@@ -1,0 +1,74 @@
+name: mj
+description: Michael Jackson tribute and history content for TikTok and YouTube Shorts
+
+script:
+  tone: "high-energy and celebratory — honor MJ's genius with the enthusiasm his music deserves"
+  pacing: "fast, punchy, match the energy of his music"
+  perspective: "devoted fan sharing the untold stories behind the world's greatest entertainer"
+  word_count: 150
+  hooks:
+    - "Michael Jackson's biggest secret was..."
+    - "Nobody talks about the time MJ..."
+    - "This is the moment that made Michael Jackson a legend..."
+    - "Before Thriller, Michael Jackson..."
+    - "The real story behind this MJ moment will shock you..."
+    - "Michael Jackson almost didn't make this iconic move..."
+    - "Here's what happened backstage the night MJ..."
+  structure:
+    opening: "Explosive hook — a fact so surprising it stops the scroll"
+    middle: "Fast-paced storytelling with musical context and behind-the-scenes detail"
+    closing: "Celebrate his unmatched legacy and cultural impact"
+  cta_variants:
+    - "Follow for more MJ facts that'll blow your mind."
+    - "Subscribe for the untold Michael Jackson story."
+    - "Drop a 🕺 if you're an MJ fan."
+    - "Follow — new MJ stories every week."
+  forbidden_phrases:
+    - "in today's video"
+    - "don't forget to like and subscribe"
+    - "without further ado"
+    - "let's dive in"
+    - "hey guys"
+
+visual:
+  style: "dynamic, high-energy 1980s pop spectacle aesthetic"
+  mood: "electrifying, iconic, celebratory, larger-than-life"
+  subjects:
+    - "disco balls and dramatic concert lighting rigs"
+    - "1980s arena concert stages with pyrotechnics and lasers"
+    - "sequined gloves, fedora hats, and iconic MJ fashion"
+    - "vinyl records and music production studios from the 1980s"
+    - "crowd scenes at massive outdoor concerts"
+    - "neon lights, pop art, and bold graphic design"
+    - "moonwalk silhouettes and dancer formations"
+    - "vintage music video sets and film equipment"
+  avoid_subjects:
+    - "modern influencer aesthetics"
+    - "contemporary generic stock footage"
+    - "muted or desaturated color palettes"
+  prompt_suffix: "vibrant 1980s aesthetic, electric neon lighting, high contrast, dynamic motion blur, pop art influence, cinematic concert atmosphere, bold saturated colors"
+
+voice:
+  pace: "fast"
+  energy: "high"
+  suggested_voices:
+    edge: "en-US-GuyNeural"
+    elevenlabs: "JBFqnCBsd6RMkjVDRZzb"
+
+captions:
+  font: "Helvetica"
+  highlight_color: "#FFFFFF"
+  position: "lower_third"
+
+music:
+  mood: "upbeat, pop, energetic"
+  energy: "high"
+  duck_factor: 0.10
+
+thumbnail:
+  layout: "title_lower_third"
+  text_position: "bottom"
+  color_scheme:
+    primary: "#FFFFFF"
+    secondary: "#FF0000"
+    background: "#000000"
