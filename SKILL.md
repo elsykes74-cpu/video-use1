@@ -77,6 +77,7 @@ Helpers (`helpers/transcribe.py`, `helpers/render.py`, etc.) live alongside this
 - **`timeline_view.py <video> <start> <end>`** — filmstrip + waveform PNG. On-demand visual drill-down. **Not a scan tool** — use it at decision points, not constantly.
 - **`render.py <edl.json> -o <out>`** — per-segment extract → concat → overlays (PTS-shifted) → subtitles LAST. `--preview` for 720p fast. `--build-subtitles` to generate master.srt inline.
 - **`grade.py <in> -o <out>`** — ffmpeg filter chain grade. Presets + `--filter '<raw>'` for custom.
+- **`ken_burns.py <photo> -o <clip.mp4>`** — convert a still photo to a video clip with Ken Burns zoom/pan motion. `--effect zoom_in|zoom_out|pan_right|pan_left|pan_up|ken_burns`. `--duration` (default 6s). `--size 1080x1920` for vertical output. `--batch` to process a whole folder of images. Output is a standard MP4 with silent audio — drop it into `sources` in `edl.json` like any video clip.
 
 For animations, create `<edit>/animations/slot_<id>/` with `Bash` and spawn a sub-agent via the `Agent` tool.
 
@@ -168,6 +169,7 @@ Mental model is ASC CDL. Per channel: `out = (in * slope + offset) ** power`, th
 **Example filter chains** (`grade.py` has `--list-presets`; use them as starting points or mix your own):
 
 - **`warm_cinematic`** — retro/technical, subtle teal/orange split, desaturated. Shipped in a real launch video. Safe for talking heads.
+- **`vintage_warm`** — archival/documentary look for 1950s-70s footage. Lifts muddy blacks, adds amber warmth, reduces over-saturation from tape digitization. Gentler than warm_cinematic. Good for Elvis/Motown-era concert and TV footage.
 - **`neutral_punch`** — minimal corrective: contrast bump + gentle S-curve. No hue shifts.
 - **`none`** — straight copy. Default when the user hasn't asked.
 
