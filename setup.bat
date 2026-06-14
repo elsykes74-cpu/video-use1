@@ -1,5 +1,5 @@
 @echo off
-title Elvis & MJ Bot Setup
+title Elvis ^& MJ Bot Setup
 echo.
 echo ================================================
 echo   Elvis ^& MJ Content Bot - Windows Setup
