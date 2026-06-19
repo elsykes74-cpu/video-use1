@@ -28,3 +28,6 @@
 - `python -m unittest tests.quickkick_bot.test_planner_and_render -v` — passed, 7 tests OK including the 60s/5-images density regression and real-audio reconciliation path
 - `python -m unittest tests.quickkick_bot.test_settings_and_state -v` — passed, 2 tests OK
 - `python -m unittest tests.quickkick_bot.test_planner_and_render tests.quickkick_bot.test_settings_and_state -v` — passed, 9 tests OK
+
+## Fix Pass Commit SHAs
+- `28eeaa8` — `fix: reconcile task 3 render density`
