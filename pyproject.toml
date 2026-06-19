@@ -6,13 +6,18 @@ license = { file = "LICENSE" }
 requires-python = ">=3.10"
 dependencies = [
     "aiohttp",
+    "google-api-python-client",
+    "google-auth-httplib2",
+    "google-auth-oauthlib",
     "httpx",
     "librosa",
     "matplotlib",
     "numpy",
     "openai",
+    "open-clip-torch",
     "pillow",
     "python-dotenv",
     "python-telegram-bot[job-queue]>=20.0",
     "requests",
+    "torch",
 ]

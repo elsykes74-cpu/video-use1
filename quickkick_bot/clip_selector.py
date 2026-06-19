@@ -74,7 +74,10 @@ def _encode_images(image_paths: list[Path], preprocess, model) -> "torch.Tensor"
 
     # Replace failed images with zero vectors so indexing stays consistent
     if features:
-        dim = next(f for f in features if f is not None).shape[-1]
+        first_valid = next((f for f in features if f is not None), None)
+        if first_valid is None:
+            return torch.zeros(len(image_paths), 512)
+        dim = first_valid.shape[-1]
         features = [
             f if f is not None else torch.zeros(1, dim)
             for f in features
