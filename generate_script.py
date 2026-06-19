@@ -30,7 +30,7 @@ API_KEY   = os.environ["QUICKKICK_API_KEY"]
 TOPIC     = os.environ.get("TOPIC", "")
 SCRIPT    = os.environ.get("SCRIPT", "")
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", "15"))
-TIMEOUT       = int(os.environ.get("TIMEOUT", "900"))
+TIMEOUT       = int(os.environ.get("TIMEOUT", "1200"))
 
 HEADERS = {
     "Authorization": f"Bearer {API_KEY}",

@@ -28,5 +28,5 @@ jobs:
           QUICKKICK_API_KEY: ${{ secrets.QUICKKICK_API_KEY }}
           TOPIC: ${{ github.event.inputs.topic }}
           POLL_INTERVAL: "20"
-          TIMEOUT: "900"
+          TIMEOUT: "1200"
         run: python generate_script.py
