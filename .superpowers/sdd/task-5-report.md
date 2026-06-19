@@ -18,3 +18,21 @@
 ## Concerns
 
 - The OpenRouter fallback assumes the configured `OPENROUTER_IMAGE_MODEL` supports the OpenAI-compatible `images.edit` flow at `https://openrouter.ai/api/v1`; if the selected model does not, the code falls back to copying the original source image into the run folder.
+
+## Review Fix
+
+- Removed the silent raw-copy fallback from `prepare_selected_images(...)`; the matched-image prep path is now provider-authoritative: OpenAI restore first, then OpenRouter restore, then explicit failure if both providers fail.
+- Added regression coverage for the both-providers-fail case so the failure is surfaced instead of returning the original file.
+
+## Review Fix Verification
+
+- `python -m unittest tests.quickkick_bot.test_image_prep -v` -> passed
+- `python -m unittest tests.quickkick_bot.test_import_smoke tests.quickkick_bot.test_image_prep -v` -> passed
+
+## Review Fix Commit SHA(s)
+
+- Pending at report update time
+
+## Updated Concerns
+
+- The OpenRouter fallback still assumes the configured `OPENROUTER_IMAGE_MODEL` supports the OpenAI-compatible `images.edit` flow at `https://openrouter.ai/api/v1`; if not, matched-image prep now fails explicitly instead of copying the original source image.

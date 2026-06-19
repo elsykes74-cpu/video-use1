@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import shutil
 from pathlib import Path
 
 try:
@@ -28,7 +27,6 @@ def prepare_selected_images(selection_plan: dict, output_dir: Path) -> list[Path
                 prepared_paths.append(restore_with_openrouter(src_path, dest_path))
             except Exception as openrouter_error:
                 logger.warning("OpenRouter image restore failed for %s: %s", src_path.name, openrouter_error)
-                shutil.copy(src_path, dest_path)
-                prepared_paths.append(dest_path)
+                raise
 
     return prepared_paths
