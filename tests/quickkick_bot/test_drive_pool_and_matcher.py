@@ -174,7 +174,7 @@ Visual Direction: Elvis enters
             ]
 
             with patch.object(
-                pipeline, "_clip_select_images", return_value=[local_path]
+                pipeline, "_clip_select_images_with_trust", return_value=([local_path], True)
             ), patch.object(
                 pipeline, "collect_drive_candidates", return_value=[DriveCandidate("drive-2", "drive_02.png", 0.9, "drive-file", drive_path)]
             ) as mock_collect, patch.object(
@@ -226,15 +226,9 @@ Visual Direction: Elvis enters
             ]
 
             with patch.object(
-                pipeline, "_clip_select_images", return_value=[first_local, second_local]
-            ), patch.object(
-                pipeline,
-                "_local_image_dirs",
-                return_value=[local_dir],
-            ), patch.object(
-                pipeline,
-                "collect_drive_candidates",
-                side_effect=AssertionError("Drive should not be queried for strong local coverage"),
+                pipeline, "_clip_select_images_with_trust", return_value=([first_local, second_local], True)
+            ), patch.object(pipeline, "_local_image_dirs", return_value=[local_dir]), patch.object(
+                pipeline, "collect_drive_candidates", side_effect=AssertionError("Drive should not be queried for strong local coverage")
             ):
                 paths = pipeline._collect_scene_images("Elvis Test", scenes)
 
@@ -259,16 +253,12 @@ Visual Direction: Elvis enters
 
             with patch.object(
                 pipeline,
-                "_clip_select_images",
-                return_value=[first_local, second_local],
+                "_clip_select_images_with_trust",
+                return_value=([first_local, second_local], False),
             ), patch.object(
                 pipeline,
                 "_local_image_dirs",
                 return_value=[local_dir],
-            ), patch.object(
-                pipeline,
-                "_LAST_CLIP_SELECTION_TRUSTED",
-                False,
             ), patch.object(
                 pipeline,
                 "collect_drive_candidates",

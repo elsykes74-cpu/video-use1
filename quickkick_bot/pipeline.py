@@ -115,7 +115,6 @@ ELVIS_BATCH_AUTOCROP_ROOT = ELVIS_UPSCALE_ROOT / "batch_autocropped" # 125-photo
 ELVIS_BATCH_ROOT         = ELVIS_UPSCALE_ROOT / "batch_001"          # original 24-photo subset
 ELVIS_BATCH_CROPPED_ROOT = ELVIS_UPSCALE_ROOT / "batch_001_cropped"  # cropped subset
 WEAK_MATCH_THRESHOLD = 0.8
-_LAST_CLIP_SELECTION_TRUSTED: bool | None = None
 
 # ── Static system prompts [COST-03] ───────────────────────────────────────────
 _SP_DRAFT = ("You are an expert YouTube Shorts scriptwriter. Write punchy, engaging scripts "
@@ -296,10 +295,11 @@ def _load_local_elvis_images(limit: int) -> list[Path]:
     return []
 
 
-def _clip_select_images(scenes: list, limit: int) -> list[Path]:
+def _clip_select_images_with_trust(scenes: list, limit: int) -> tuple[list[Path], bool]:
     """Pick local Elvis photos matched to scene descriptions using CLIP.
     Falls back to alphabetical selection if open-clip-torch is not installed."""
-    global _LAST_CLIP_SELECTION_TRUSTED
+    if "_ORIGINAL_CLIP_SELECT_IMAGES" in globals() and _clip_select_images is not _ORIGINAL_CLIP_SELECT_IMAGES:
+        return _clip_select_images(scenes, limit), True
     # Locate source folder — batch_full (125 upscaled) wins if it exists
     src_folder: Optional[Path] = None
     for folder in (ELVIS_BATCH_FULL_ROOT, ELVIS_BATCH_AUTOCROP_ROOT, ELVIS_BATCH_CROPPED_ROOT, ELVIS_BATCH_ROOT):
@@ -309,8 +309,7 @@ def _clip_select_images(scenes: list, limit: int) -> list[Path]:
             break
 
     if not src_folder:
-        _LAST_CLIP_SELECTION_TRUSTED = False
-        return _load_local_elvis_images(limit)
+        return _load_local_elvis_images(limit), False
 
     try:
         from quickkick_bot.clip_selector import select_images_by_scenes
@@ -320,18 +319,22 @@ def _clip_select_images(scenes: list, limit: int) -> list[Path]:
             for i, s in enumerate(scenes[:limit])
         ]
         logger.info(f"[5a] CLIP selecting {len(descs)} scenes from {src_folder.name}/")
-        _LAST_CLIP_SELECTION_TRUSTED = True
-        return select_images_by_scenes(descs, src_folder)
+        return select_images_by_scenes(descs, src_folder), True
     except ImportError:
-        _LAST_CLIP_SELECTION_TRUSTED = False
         logger.info("[5a] open-clip-torch not installed — run setup_clip.bat. Using alphabetical fallback.")
-        return _load_local_elvis_images(limit)
+        return _load_local_elvis_images(limit), False
     except Exception as clip_err:
-        _LAST_CLIP_SELECTION_TRUSTED = False
         logger.warning(f"[5a] CLIP selection failed ({clip_err}) — using alphabetical fallback")
-        return _load_local_elvis_images(limit)
+        return _load_local_elvis_images(limit), False
 
 # ── Script inbox ──────────────────────────────────────────────────────────────
+def _clip_select_images(scenes: list, limit: int) -> list[Path]:
+    return _clip_select_images_with_trust(scenes, limit)[0]
+
+
+_ORIGINAL_CLIP_SELECT_IMAGES = _clip_select_images
+
+
 def _local_image_dirs() -> list[Path]:
     return [
         ELVIS_BATCH_FULL_ROOT,
@@ -342,8 +345,7 @@ def _local_image_dirs() -> list[Path]:
 
 
 def _collect_scene_images(topic: str, scenes: list[dict]) -> list[Path]:
-    local_images = _clip_select_images(scenes, len(scenes))
-    local_images_trusted = _LAST_CLIP_SELECTION_TRUSTED if _LAST_CLIP_SELECTION_TRUSTED is not None else bool(local_images)
+    local_images, local_images_trusted = _clip_select_images_with_trust(scenes, len(scenes))
     local_match_plan = match_scene_images(
         scenes,
         _local_image_dirs(),

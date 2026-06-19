@@ -58,3 +58,22 @@
 ### Concerns
 
 - Trust is currently tracked as process-local pipeline state around `_clip_select_images`, which is sufficient for this single-run pipeline path but still intentionally lightweight.
+
+## Third Fix Pass
+
+### Summary
+
+- Removed the module-global CLIP trust bit from `pipeline.py` and replaced it with an explicit per-call seam: `_clip_select_images_with_trust(...) -> (images, trusted)`.
+- Kept `_clip_select_images(...)` as a compatibility wrapper so existing callers and tests still work, while `_collect_scene_images` now consumes the explicit trust tuple directly.
+- Adjusted Task 4 regression coverage to patch the trust-aware seam directly, while preserving coverage for older codepaths that still patch `_clip_select_images`.
+
+### Verification
+
+- `python -m unittest tests.quickkick_bot.test_drive_pool_and_matcher -v`
+  - Passed: 9 tests
+- `python -m unittest tests.quickkick_bot.test_planner_and_render tests.quickkick_bot.test_settings_and_state tests.quickkick_bot.test_import_smoke -v`
+  - Passed: 11 tests
+
+### Concerns
+
+- Zip-contained Drive images still require full archive download before enumeration, so large archives remain the slowest candidate-discovery path.
