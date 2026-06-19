@@ -39,3 +39,22 @@
 ### Concerns
 
 - Full zip downloads are still required before zip-contained image enumeration, so very large Drive archives will remain the slowest part of candidate discovery.
+
+## Second Fix Pass
+
+### Summary
+
+- Distinguished trusted CLIP-selected local matches from untrusted alphabetical/local fallback by tracking trust state at the pipeline seam.
+- Stopped fallback local lists from receiving automatic strong scores, so CLIP-unavailable or CLIP-failure paths still drive weak-scene scoring and Drive fallback when local filenames are not strong matches.
+- Added regression coverage for the fallback-local path to ensure Drive search is not silently suppressed.
+
+### Verification
+
+- `python -m unittest tests.quickkick_bot.test_drive_pool_and_matcher -v`
+  - Passed: 9 tests
+- `python -m unittest tests.quickkick_bot.test_planner_and_render tests.quickkick_bot.test_settings_and_state tests.quickkick_bot.test_import_smoke -v`
+  - Passed: 11 tests
+
+### Concerns
+
+- Trust is currently tracked as process-local pipeline state around `_clip_select_images`, which is sufficient for this single-run pipeline path but still intentionally lightweight.

@@ -240,6 +240,46 @@ Visual Direction: Elvis enters
 
         self.assertEqual(paths, [first_local, second_local])
 
+    def test_collect_scene_images_does_not_trust_fallback_local_matches(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            local_dir = Path(tmpdir) / "local"
+            local_dir.mkdir()
+            cache_dir = Path(tmpdir) / "cache"
+            cache_dir.mkdir()
+            first_local = local_dir / "elvis-enters.png"
+            second_local = local_dir / "b.png"
+            first_local.write_bytes(b"local")
+            second_local.write_bytes(b"local")
+            drive_path = cache_dir / "elvis-stage.png"
+            drive_path.write_bytes(b"drive")
+            scenes = [
+                {"scene": 1, "description": "Elvis enters"},
+                {"scene": 2, "description": "Elvis on stage"},
+            ]
+
+            with patch.object(
+                pipeline,
+                "_clip_select_images",
+                return_value=[first_local, second_local],
+            ), patch.object(
+                pipeline,
+                "_local_image_dirs",
+                return_value=[local_dir],
+            ), patch.object(
+                pipeline,
+                "_LAST_CLIP_SELECTION_TRUSTED",
+                False,
+            ), patch.object(
+                pipeline,
+                "collect_drive_candidates",
+                return_value=[DriveCandidate("drive-1", "elvis-stage.png", 0.9, "drive-file", drive_path)],
+            ) as mock_collect:
+                paths = pipeline._collect_scene_images("Elvis Test", scenes)
+
+        self.assertEqual(paths[0], first_local)
+        self.assertEqual(paths[1], drive_path)
+        mock_collect.assert_called_once()
+
     def test_pipeline_uses_matching_path_for_generated_topics(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             out_dir = Path(tmpdir) / "run"

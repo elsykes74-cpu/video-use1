@@ -122,8 +122,22 @@ def match_scene_images(
     drive_candidates: list[DriveCandidate],
     weak_threshold: float,
     preferred_local_matches: list[Path] | None = None,
+    preferred_local_matches_trusted: bool = True,
 ) -> dict:
-    local_matches = _select_local_matches(scene_beats, local_dirs, preferred_local_matches=preferred_local_matches)
+    local_matches = _select_local_matches(
+        scene_beats,
+        local_dirs,
+        preferred_local_matches=preferred_local_matches,
+    )
+    if preferred_local_matches is not None and not preferred_local_matches_trusted:
+        descriptions = [
+            beat.get("narration") or beat.get("description") or f"Scene {index + 1}"
+            for index, beat in enumerate(scene_beats)
+        ]
+        for index, path in enumerate(preferred_local_matches):
+            if index >= len(descriptions):
+                break
+            local_matches[index] = _local_match_record(Path(path), descriptions[index], trusted=False)
     selections: list[dict] = []
     weak_scenes: list[int] = []
     used_drive_indexes: set[int] = set()
