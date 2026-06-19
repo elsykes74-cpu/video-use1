@@ -50,8 +50,12 @@ from telegram.ext import (
 
 load_dotenv()
 try:
+    from .planner import plan_image_beats
+    from .render import assemble_motion_video
     from .settings import load_settings
 except ImportError:  # pragma: no cover - direct script execution
+    from quickkick_bot.planner import plan_image_beats
+    from quickkick_bot.render import assemble_motion_video
     from quickkick_bot.settings import load_settings
 
 # ── Logging ───────────────────────────────────────────────────────────────────
@@ -371,28 +375,7 @@ def _youtube_upload(video_path: Path, title: str, description: str = "") -> str:
 
 # ── ffmpeg assembly ───────────────────────────────────────────────────────────
 def _assemble_video(image_paths: list, audio_path: Path, out_path: Path) -> None:
-    ffmpeg = _ffmpeg_bin()
-    duration = _probe_audio_duration(audio_path, ffmpeg=ffmpeg)
-
-    per_img = duration / max(len(image_paths), 1)
-    concat_file = out_path.parent / "concat.txt"
-    with open(concat_file, "w") as f:
-        for p in image_paths:
-            f.write(f"file '{Path(p).as_posix()}'\n")
-            f.write(f"duration {per_img:.3f}\n")
-        if image_paths:
-            f.write(f"file '{Path(image_paths[-1]).as_posix()}'\n")
-
-    subprocess.run([
-        ffmpeg, "-y",
-        "-f", "concat", "-safe", "0", "-i", str(concat_file),
-        "-i", str(audio_path),
-        "-c:v", "libx264", "-pix_fmt", "yuv420p",
-        "-c:a", "aac", "-shortest",
-        "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black",
-        str(out_path),
-    ], check=True)
-    concat_file.unlink(missing_ok=True)
+    assemble_motion_video([Path(path) for path in image_paths], audio_path, out_path, SETTINGS)
 
 
 def _ffmpeg_bin() -> str:
@@ -424,6 +407,11 @@ def _probe_audio_duration(audio_path: Path, ffmpeg: Optional[str] = None) -> flo
             pass
         break
     return duration
+
+
+def _estimate_narration_seconds(narration: str) -> float:
+    words = len(re.findall(r"\w+", narration))
+    return max(1.0, words / 2.5)
 
 
 def _resolve_elevenlabs_voice_id(voice_name: str, api_key: str) -> str:
@@ -557,6 +545,7 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
         except Exception:
             scenes = [{"scene": i + 1, "description": f"Scene {i + 1}: {topic}"} for i in range(15)]
         scenes = (scenes + [{"scene": i + 16, "description": "Closing scene"} for i in range(15)])[:15]
+    scenes = plan_image_beats(scenes, _estimate_narration_seconds(narration), SETTINGS)
     (out_dir / "scenes.json").write_text(json.dumps(scenes, indent=2), encoding="utf-8")
     time.sleep(API_COOLDOWN)
 
@@ -565,7 +554,7 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
     if local_images:
         step(f"4/8 local Elvis images x{len(local_images)}")
     else:
-        step("4/8 scene images gpt-image-1 x15")
+        step(f"4/8 scene images gpt-image-1 x{len(scenes)}")
     if not local_images and not openai_client:
         raise RuntimeError("OPENAI_API_KEY required for image generation")
     images_dir = out_dir / "images"
@@ -593,18 +582,18 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
                     saved = True
                     break
                 except Exception as img_err:
-                    logger.warning(f"  [5a] {i + 1}/15 attempt {attempt + 1} failed: {img_err}")
+                    logger.warning(f"  [5a] {i + 1}/{len(scenes)} attempt {attempt + 1} failed: {img_err}")
                     time.sleep(2)
             if not saved:
                 if _fallback_img and _fallback_img.exists():
                     import shutil as _shutil
                     _shutil.copy(_fallback_img, img_path)
-                    logger.warning(f"  [5a] {i + 1}/15 using fallback image")
+                    logger.warning(f"  [5a] {i + 1}/{len(scenes)} using fallback image")
                 else:
-                    logger.warning(f"  [5a] {i + 1}/15 skipped (no fallback available)")
+                    logger.warning(f"  [5a] {i + 1}/{len(scenes)} skipped (no fallback available)")
                     continue
             image_paths.append(img_path)
-            logger.info(f"  [5a] {i + 1}/15 saved")
+            logger.info(f"  [5a] {i + 1}/{len(scenes)} saved")
             time.sleep(API_COOLDOWN)
 
     # 5 — TTS
