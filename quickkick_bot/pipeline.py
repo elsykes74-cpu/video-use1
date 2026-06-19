@@ -51,11 +51,11 @@ from telegram.ext import (
 load_dotenv()
 try:
     from .planner import plan_image_beats
-    from .render import assemble_motion_video
+    from .render import assemble_motion_video, reconcile_image_paths
     from .settings import load_settings
 except ImportError:  # pragma: no cover - direct script execution
     from quickkick_bot.planner import plan_image_beats
-    from quickkick_bot.render import assemble_motion_video
+    from quickkick_bot.render import assemble_motion_video, reconcile_image_paths
     from quickkick_bot.settings import load_settings
 
 # ── Logging ───────────────────────────────────────────────────────────────────
@@ -602,6 +602,9 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
     audio_path = out_dir / "narration.mp3"
     _synthesize_speech(narration, audio_path)
     audio_duration = _probe_audio_duration(audio_path)
+    scenes = plan_image_beats(scenes, audio_duration, SETTINGS)
+    image_paths = reconcile_image_paths(image_paths, audio_duration, SETTINGS)
+    (out_dir / "scenes.json").write_text(json.dumps(scenes, indent=2), encoding="utf-8")
     time.sleep(API_COOLDOWN)
 
     # 6 — Thumbnail for long-form videos only

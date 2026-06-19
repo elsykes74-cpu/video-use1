@@ -4,6 +4,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from quickkick_bot.planner import target_image_count
 from quickkick_bot.settings import Settings
 
 
@@ -54,7 +55,8 @@ def assemble_motion_video(
 
     ffmpeg = _ffmpeg_bin()
     duration = _probe_audio_duration(audio_path, ffmpeg=ffmpeg)
-    seconds_per_image = _seconds_per_image(duration, len(image_paths), settings)
+    image_paths = reconcile_image_paths(image_paths, duration, settings)
+    seconds_per_image = _seconds_per_image(duration, len(image_paths))
     filter_text = build_slideshow_filter(len(image_paths), seconds_per_image)
 
     command = [ffmpeg, "-y"]
@@ -84,22 +86,23 @@ def assemble_motion_video(
     subprocess.run(command, check=True)
 
 
-def _seconds_per_image(duration: float, image_count: int, settings: Settings) -> list[float]:
+def reconcile_image_paths(
+    image_paths: list[Path],
+    narration_seconds: float,
+    settings: Settings,
+) -> list[Path]:
+    if not image_paths:
+        raise ValueError("image_paths must not be empty")
+
+    target_count = target_image_count(len(image_paths), narration_seconds, settings)
+    return [image_paths[index % len(image_paths)] for index in range(target_count)]
+
+
+def _seconds_per_image(duration: float, image_count: int) -> list[float]:
     if image_count <= 0:
         raise ValueError("image_count must be positive")
-
-    average = duration / image_count if duration > 0 else settings.image_seconds_floor
-    clamped = min(settings.image_seconds_ceiling, max(settings.image_seconds_floor, average))
-
-    if duration >= settings.image_seconds_floor * image_count:
-        seconds = [clamped] * image_count
-        seconds[-1] = max(settings.image_seconds_floor, duration - sum(seconds[:-1]))
-        return seconds
-
-    base = duration / image_count if duration > 0 else settings.image_seconds_floor
-    seconds = [base] * image_count
-    seconds[-1] = max(0.1, duration - sum(seconds[:-1]))
-    return seconds
+    per_image = max(0.1, duration / image_count) if duration > 0 else 0.1
+    return [per_image] * image_count
 
 
 def _ffmpeg_bin() -> str:

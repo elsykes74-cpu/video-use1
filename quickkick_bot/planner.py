@@ -5,13 +5,23 @@ import math
 from quickkick_bot.settings import Settings
 
 
-def plan_image_beats(scenes: list[dict], narration_seconds: float, settings: Settings) -> list[dict]:
+def image_count_bounds(narration_seconds: float, settings: Settings) -> tuple[int, int]:
     minimum = max(
         settings.minimum_images,
         math.ceil(narration_seconds / settings.image_seconds_ceiling),
     )
     maximum = max(minimum, math.floor(narration_seconds / settings.image_seconds_floor))
-    target = min(maximum, max(minimum, len(scenes) or minimum))
+    return minimum, maximum
+
+
+def target_image_count(current_count: int, narration_seconds: float, settings: Settings) -> int:
+    minimum, maximum = image_count_bounds(narration_seconds, settings)
+    baseline = current_count or minimum
+    return min(maximum, max(minimum, baseline))
+
+
+def plan_image_beats(scenes: list[dict], narration_seconds: float, settings: Settings) -> list[dict]:
+    target = target_image_count(len(scenes), narration_seconds, settings)
 
     if not scenes:
         return [{"scene": index + 1, "description": f"Beat {index + 1}"} for index in range(target)]

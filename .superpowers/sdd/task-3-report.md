@@ -18,3 +18,13 @@
 ## Concerns
 - Full `unittest discover` is still broken by the existing test-package/import structure and is not specific to Task 3.
 - `quickkick_bot.render` currently duplicates ffmpeg probing helpers that also still exist in `quickkick_bot.pipeline`; consolidating them would be a reasonable follow-up cleanup.
+
+## Fix Pass
+- Addressed the 60s/5-images density failure by making both planning and rendering reconcile to a target image count that keeps the average image duration inside the configured 3-5 second window when duplication/trimming can do so.
+- Updated the pipeline to re-plan beats and reconcile render inputs again after real TTS audio duration is probed, while preserving the under-2-minute thumbnail skip rule.
+- Extended Task 3 coverage with a direct density-regression test and a pipeline integration test that proves post-TTS audio duration changes the render input count.
+
+## Fix Pass Verification
+- `python -m unittest tests.quickkick_bot.test_planner_and_render -v` — passed, 7 tests OK including the 60s/5-images density regression and real-audio reconciliation path
+- `python -m unittest tests.quickkick_bot.test_settings_and_state -v` — passed, 2 tests OK
+- `python -m unittest tests.quickkick_bot.test_planner_and_render tests.quickkick_bot.test_settings_and_state -v` — passed, 9 tests OK
