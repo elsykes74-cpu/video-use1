@@ -103,6 +103,31 @@ class DrivePoolAndMatcherTests(unittest.TestCase):
         self.assertEqual(result["weak_scenes"], [2])
         self.assertLess(result["selections"][1]["score"], 0.5)
 
+    def test_matcher_uses_drive_when_local_match_is_weak(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            local_dir = Path(tmpdir) / "local"
+            local_dir.mkdir()
+            cache_dir = Path(tmpdir) / "cache"
+            cache_dir.mkdir()
+            local_path = local_dir / "totally-unrelated.png"
+            local_path.write_bytes(b"fake")
+            drive_path = cache_dir / "elvis-stage.png"
+            drive_path.write_bytes(b"fake")
+            scenes = [{"scene": 1, "description": "Elvis on stage"}]
+            drive_candidates = [
+                DriveCandidate("drive-1", "elvis-stage.png", 0.9, "drive-file", drive_path),
+            ]
+
+            result = match_scene_images(
+                scenes,
+                [local_dir],
+                drive_candidates,
+                weak_threshold=0.55,
+            )
+
+        self.assertEqual(result["selections"][0]["source_tier"], "drive-file")
+        self.assertEqual(result["weak_scenes"], [])
+
     def test_pipeline_stops_when_any_scene_match_is_weak(self) -> None:
         production_doc = """Topic: Elvis Test
 
@@ -136,6 +161,113 @@ Visual Direction: Elvis enters
                     pipeline._run_pipeline_sync("Elvis Test", out_dir, production_doc)
 
         mock_assemble.assert_not_called()
+
+    def test_collect_scene_images_supplements_partial_local_coverage_from_drive(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            local_path = Path(tmpdir) / "scene_01.png"
+            local_path.write_bytes(b"local")
+            drive_path = Path(tmpdir) / "drive_02.png"
+            drive_path.write_bytes(b"drive")
+            scenes = [
+                {"scene": 1, "description": "Elvis enters"},
+                {"scene": 2, "description": "Elvis waves"},
+            ]
+
+            with patch.object(
+                pipeline, "_clip_select_images", return_value=[local_path]
+            ), patch.object(
+                pipeline, "collect_drive_candidates", return_value=[DriveCandidate("drive-2", "drive_02.png", 0.9, "drive-file", drive_path)]
+            ) as mock_collect, patch.object(
+                pipeline,
+                "match_scene_images",
+                return_value={
+                    "selections": [
+                        {
+                            "scene": 1,
+                            "path": str(local_path),
+                            "local_cache_path": str(local_path),
+                            "score": 1.0,
+                            "source_tier": "local",
+                            "file_id": "",
+                            "name": local_path.name,
+                        },
+                        {
+                            "scene": 2,
+                            "path": str(drive_path),
+                            "local_cache_path": str(drive_path),
+                            "score": 0.9,
+                            "source_tier": "drive-file",
+                            "file_id": "drive-2",
+                            "name": "drive_02.png",
+                        },
+                    ],
+                    "weak_scenes": [],
+                },
+            ), patch.object(
+                pipeline, "ensure_candidate_cached", side_effect=lambda candidate: candidate.local_cache_path
+            ) as mock_cache:
+                paths = pipeline._collect_scene_images("Elvis Test", scenes)
+
+        self.assertEqual(paths, [local_path, drive_path])
+        mock_collect.assert_called_once()
+        mock_cache.assert_called_once()
+
+    def test_collect_scene_images_skips_drive_when_local_coverage_is_strong(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            local_dir = Path(tmpdir) / "local"
+            local_dir.mkdir()
+            first_local = local_dir / "elvis-enters.png"
+            second_local = local_dir / "elvis-waves.png"
+            first_local.write_bytes(b"local")
+            second_local.write_bytes(b"local")
+            scenes = [
+                {"scene": 1, "description": "Elvis enters"},
+                {"scene": 2, "description": "Elvis waves"},
+            ]
+
+            with patch.object(
+                pipeline, "_clip_select_images", return_value=[first_local, second_local]
+            ), patch.object(
+                pipeline,
+                "_local_image_dirs",
+                return_value=[local_dir],
+            ), patch.object(
+                pipeline,
+                "collect_drive_candidates",
+                side_effect=AssertionError("Drive should not be queried for strong local coverage"),
+            ):
+                paths = pipeline._collect_scene_images("Elvis Test", scenes)
+
+        self.assertEqual(paths, [first_local, second_local])
+
+    def test_pipeline_uses_matching_path_for_generated_topics(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_dir = Path(tmpdir) / "run"
+            matched_path = Path(tmpdir) / "matched.png"
+            matched_path.write_bytes(b"matched")
+
+            with patch("quickkick_bot.pipeline._call_openai", side_effect=[
+                "polished narration",
+                '[{"scene": 1, "description": "Elvis enters the stage"}]',
+            ]), patch.object(
+                pipeline, "_collect_scene_images", return_value=[matched_path]
+            ) as mock_collect, patch(
+                "quickkick_bot.pipeline._synthesize_speech",
+                side_effect=lambda narration, audio_path: audio_path.write_bytes(b"audio"),
+            ), patch("quickkick_bot.pipeline._probe_audio_duration", return_value=40.0), patch(
+                "quickkick_bot.pipeline.assemble_motion_video"
+            ) as mock_assemble, patch(
+                "quickkick_bot.pipeline._youtube_upload", return_value=""
+            ), patch("quickkick_bot.pipeline.time.sleep"), patch(
+                "quickkick_bot.pipeline._record_run"
+            ):
+                result = pipeline._run_pipeline_sync("Elvis Test", out_dir, initial_script="seed script")
+
+        self.assertEqual(result["status"], "finished")
+        mock_collect.assert_called_once()
+        render_inputs = mock_assemble.call_args.args[0]
+        self.assertGreaterEqual(len(render_inputs), 1)
+        self.assertTrue(all(path.name == "scene_01.png" for path in render_inputs))
 
 
 if __name__ == "__main__":

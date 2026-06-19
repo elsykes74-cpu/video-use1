@@ -337,8 +337,19 @@ def _local_image_dirs() -> list[Path]:
 
 def _collect_scene_images(topic: str, scenes: list[dict]) -> list[Path]:
     local_images = _clip_select_images(scenes, len(scenes))
-    if local_images:
-        return local_images
+    local_match_plan = match_scene_images(
+        scenes,
+        _local_image_dirs(),
+        [],
+        weak_threshold=WEAK_MATCH_THRESHOLD,
+        preferred_local_matches=local_images,
+    )
+    if (
+        len(local_match_plan["selections"]) == len(scenes)
+        and not local_match_plan["weak_scenes"]
+        and all(selection.get("source_tier") == "local" for selection in local_match_plan["selections"])
+    ):
+        return [Path(selection["local_cache_path"]) for selection in local_match_plan["selections"]]
 
     query_text = " ".join(
         beat.get("description", "").strip()
@@ -351,6 +362,7 @@ def _collect_scene_images(topic: str, scenes: list[dict]) -> list[Path]:
         _local_image_dirs(),
         drive_candidates,
         weak_threshold=WEAK_MATCH_THRESHOLD,
+        preferred_local_matches=local_images,
     )
     if match_plan["weak_scenes"]:
         weak_text = ", ".join(str(scene) for scene in match_plan["weak_scenes"])
@@ -605,7 +617,7 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
     time.sleep(API_COOLDOWN)
 
     # 4 — Scene images
-    selected_scene_images = _collect_scene_images(topic, scenes) if parsed_doc.get("scenes") else []
+    selected_scene_images = _collect_scene_images(topic, scenes)
     if selected_scene_images:
         step(f"4/8 matched scene images x{len(selected_scene_images)}")
     else:
