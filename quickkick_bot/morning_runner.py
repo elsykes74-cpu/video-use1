@@ -199,6 +199,8 @@ def _telegram_notify(msg: str, parse_mode: str | None = None) -> None:
 def main() -> None:
     today = date.today().isoformat()
 
+    logger.info(f"Configured morning run time: {SETTINGS.morning_run_time}")
+
     # Lock file: only run once per day
     if LOCK_FILE.exists():
         logger.info(f"Already ran today ({today}). Delete {LOCK_FILE} to force a re-run.")

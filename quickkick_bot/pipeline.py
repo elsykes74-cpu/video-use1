@@ -84,7 +84,8 @@ ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "").strip()
 ELEVENLABS_MODEL_ID = os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2").strip() or "eleven_multilingual_v2"
 ELEVENLABS_OUTPUT_FORMAT = os.getenv("ELEVENLABS_OUTPUT_FORMAT", "mp3_44100_128").strip() or "mp3_44100_128"
 YOUTUBE_TOKEN_PATH = os.getenv("YOUTUBE_TOKEN_PATH", str(Path.home() / ".verticals" / "youtube_token_elvis.json"))
-THUMBNAIL_MIN_SECONDS = load_settings().thumbnail_min_seconds
+SETTINGS = load_settings()
+THUMBNAIL_MIN_SECONDS = SETTINGS.thumbnail_min_seconds
 _ELEVENLABS_VOICE_CACHE: dict[str, str] = {}
 
 # ── Config: HTTP API server ───────────────────────────────────────────────────
