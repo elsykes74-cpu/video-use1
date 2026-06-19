@@ -1,0 +1,76 @@
+name: elvis
+description: Elvis Presley tribute and history content for YouTube Shorts
+
+script:
+  tone: "reverent but gripping — treat Elvis as the cultural earthquake he was"
+  pacing: "moderate, let dramatic facts land before moving on"
+  perspective: "passionate fan and historian sharing hidden gems most people never heard"
+  word_count: 160
+  hooks:
+    - "Most people don't know that Elvis..."
+    - "The story behind this Elvis moment will blow your mind..."
+    - "Before he was The King, Elvis..."
+    - "This is the moment that changed Elvis forever..."
+    - "Here's what really happened the day Elvis..."
+    - "Nobody talks about this side of Elvis Presley..."
+    - "This single decision made Elvis Presley a legend..."
+  structure:
+    opening: "Hook with a surprising or little-known Elvis fact — the kind that makes you say 'wait, really?'"
+    middle: "Develop the story with vivid detail, historical context, and emotional texture"
+    closing: "Land on the legacy — why this moment still matters today"
+  cta_variants:
+    - "Follow for more Elvis history you won't find anywhere else."
+    - "Subscribe if you love The King."
+    - "Drop a 🎸 if you already knew that."
+    - "Follow — new Elvis stories every week."
+  forbidden_phrases:
+    - "in today's video"
+    - "don't forget to like and subscribe"
+    - "without further ado"
+    - "let's dive in"
+    - "hey guys"
+    - "basically"
+
+visual:
+  style: "vintage Americana, warm cinematic tones, 1950s-1970s period aesthetic"
+  mood: "nostalgic, dramatic, celebratory, larger-than-life"
+  subjects:
+    - "vintage microphones and recording studio equipment"
+    - "1950s American small-town landscapes and city streets"
+    - "classic American cars from the 1950s and 1960s"
+    - "vintage concert stages bathed in dramatic spotlights"
+    - "vinyl records, jukeboxes, and 1950s diners"
+    - "period-accurate fashion — pompadours, leather jackets, sequined jumpsuits"
+    - "Memphis Tennessee skyline and Graceland mansion exterior"
+    - "vintage television sets showing black and white performances"
+  avoid_subjects:
+    - "modern technology or devices"
+    - "contemporary urban settings"
+    - "anime or cartoon styles"
+    - "stock photo sterility"
+  prompt_suffix: "vintage film photography aesthetic, warm amber and sepia tones, cinematic 1950s-1970s Hollywood style, high contrast, slightly desaturated, grain and warmth"
+
+voice:
+  pace: "measured"
+  energy: "medium-high"
+  suggested_voices:
+    edge: "en-US-GuyNeural"
+    elevenlabs: "JBFqnCBsd6RMkjVDRZzb"
+
+captions:
+  font: "Helvetica"
+  highlight_color: "#FFD700"
+  position: "lower_third"
+
+music:
+  mood: "cinematic, nostalgic, dramatic"
+  energy: "medium"
+  duck_factor: 0.12
+
+thumbnail:
+  layout: "title_lower_third"
+  text_position: "bottom"
+  color_scheme:
+    primary: "#FFD700"
+    secondary: "#000000"
+    background: "#1a0a00"

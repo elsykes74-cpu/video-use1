@@ -4,6 +4,9 @@
 *.pem
 *.key
 
+# Telegram bot state (contains chat_id — do not commit)
+bot/.state.json
+
 # Python
 __pycache__/
 *.py[cod]

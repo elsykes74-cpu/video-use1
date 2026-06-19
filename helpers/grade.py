@@ -58,6 +58,18 @@ PRESETS: dict[str, str] = {
         "curves=master='0/0 0.25/0.22 0.75/0.78 1/1'"
     ),
 
+    # Vintage/archival look for 1950s-70s footage: lifts muddy blacks, adds amber
+    # warmth, reduces over-saturation common in digitized film/tape. Gentler than
+    # warm_cinematic — designed to enhance rather than transform already-warm sources.
+    "vintage_warm": (
+        "eq=contrast=1.08:brightness=0.015:saturation=0.80,"
+        "colorbalance="
+        "rs=0.04:gs=0.01:bs=-0.05:"
+        "rm=0.05:gm=0.02:bm=-0.04:"
+        "rh=0.03:gh=0.01:bh=-0.02,"
+        "curves=master='0/0.02 0.25/0.24 0.75/0.77 1/0.97'"
+    ),
+
     # Flat — no grade. Useful as a sentinel for "skip grading this source".
     "none": "",
 }
