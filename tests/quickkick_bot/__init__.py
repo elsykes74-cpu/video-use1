@@ -1,0 +1,1 @@
+"""QuickKick smoke tests."""

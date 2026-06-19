@@ -65,3 +65,9 @@ project.md
 # Git worktrees
 .worktrees/
 
+_runs/
+Quickkick Upscale/
+Elvis Upscale/
+*.mp3
+*.mp4
+
