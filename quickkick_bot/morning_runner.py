@@ -28,6 +28,13 @@ from html import escape
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+try:
+    from quickkick_bot.settings import load_settings
+    from quickkick_bot.state import ApprovalState, load_approval_state, save_approval_state
+except ImportError:  # pragma: no cover - direct script execution
+    from settings import load_settings
+    from state import ApprovalState, load_approval_state, save_approval_state
+
 # ── Logging ───────────────────────────────────────────────────────────────────
 LOG_FILE = Path(__file__).parent / "_runs" / "morning_runner.log"
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -64,6 +71,7 @@ def _load_env(env_path: Path) -> None:
 _load_env(QUICKKICK_DIR / ".env")
 # Hermes .env fills in anything else (Google auth env vars, etc.)
 _load_env(HERMES_HOME / ".env")
+SETTINGS = load_settings()
 
 # ── Config from env ───────────────────────────────────────────────────────────
 GDRIVE_TOPIC_FOLDER  = os.getenv("GDRIVE_TOPIC_FOLDER", "Elvis Daily Topics").strip()
