@@ -1,0 +1,38 @@
+name: Generate QuickKick Video
+
+on:
+  # Manual trigger with optional topic override
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Video topic (leave blank to let QuickKick auto-select)"
+        required: false
+        default: ""
+
+  # Scheduled: run once per day at 10:00 AM UTC (adjust to taste)
+  schedule:
+    - cron: "0 10 * * *"
+
+jobs:
+  generate:
+    name: Generate video via QuickKick API
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run generate_script.py
+        env:
+          QUICKKICK_API_URL: ${{ secrets.QUICKKICK_API_URL }}
+          QUICKKICK_API_KEY: ${{ secrets.QUICKKICK_API_KEY }}
+          TOPIC: ${{ github.event.inputs.topic }}
+          POLL_INTERVAL: "20"
+          TIMEOUT: "1200"
+        run: python generate_script.py
