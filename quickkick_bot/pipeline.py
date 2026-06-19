@@ -50,10 +50,14 @@ from telegram.ext import (
 
 load_dotenv()
 try:
+    from .drive_pool import DriveCandidate, collect_drive_candidates, ensure_candidate_cached
+    from .image_matcher import match_scene_images
     from .planner import plan_image_beats
     from .render import assemble_motion_video, reconcile_image_paths
     from .settings import load_settings
 except ImportError:  # pragma: no cover - direct script execution
+    from quickkick_bot.drive_pool import DriveCandidate, collect_drive_candidates, ensure_candidate_cached
+    from quickkick_bot.image_matcher import match_scene_images
     from quickkick_bot.planner import plan_image_beats
     from quickkick_bot.render import assemble_motion_video, reconcile_image_paths
     from quickkick_bot.settings import load_settings
@@ -110,6 +114,7 @@ ELVIS_BATCH_FULL_ROOT    = ELVIS_UPSCALE_ROOT / "batch_full"         # Drive-syn
 ELVIS_BATCH_AUTOCROP_ROOT = ELVIS_UPSCALE_ROOT / "batch_autocropped" # 125-photo face-cropped library
 ELVIS_BATCH_ROOT         = ELVIS_UPSCALE_ROOT / "batch_001"          # original 24-photo subset
 ELVIS_BATCH_CROPPED_ROOT = ELVIS_UPSCALE_ROOT / "batch_001_cropped"  # cropped subset
+WEAK_MATCH_THRESHOLD = 0.8
 
 # ── Static system prompts [COST-03] ───────────────────────────────────────────
 _SP_DRAFT = ("You are an expert YouTube Shorts scriptwriter. Write punchy, engaging scripts "
@@ -321,6 +326,56 @@ def _clip_select_images(scenes: list, limit: int) -> list[Path]:
         return _load_local_elvis_images(limit)
 
 # ── Script inbox ──────────────────────────────────────────────────────────────
+def _local_image_dirs() -> list[Path]:
+    return [
+        ELVIS_BATCH_FULL_ROOT,
+        ELVIS_BATCH_AUTOCROP_ROOT,
+        ELVIS_BATCH_CROPPED_ROOT,
+        ELVIS_BATCH_ROOT,
+    ]
+
+
+def _collect_scene_images(topic: str, scenes: list[dict]) -> list[Path]:
+    local_images = _clip_select_images(scenes, len(scenes))
+    if local_images:
+        return local_images
+
+    query_text = " ".join(
+        beat.get("description", "").strip()
+        for beat in scenes[:5]
+        if beat.get("description")
+    ).strip() or topic
+    drive_candidates = collect_drive_candidates(query_text, SETTINGS.approval_drive_folder)
+    match_plan = match_scene_images(
+        scenes,
+        _local_image_dirs(),
+        drive_candidates,
+        weak_threshold=WEAK_MATCH_THRESHOLD,
+    )
+    if match_plan["weak_scenes"]:
+        weak_text = ", ".join(str(scene) for scene in match_plan["weak_scenes"])
+        raise RuntimeError(f"weak scene matches require approval before upload: {weak_text}")
+
+    materialized_paths: list[Path] = []
+    for selection in match_plan["selections"]:
+        source_tier = selection.get("source_tier", "")
+        source_path_text = selection.get("local_cache_path") or selection.get("path", "")
+        if not source_path_text:
+            raise RuntimeError(f"missing image path for scene {selection.get('scene')}")
+        source_path = Path(source_path_text)
+        if source_tier != "local":
+            candidate = DriveCandidate(
+                file_id=selection.get("file_id", ""),
+                name=selection.get("name", source_path.name),
+                score_hint=float(selection.get("score", 0.0)),
+                source_tier=source_tier,
+                local_cache_path=source_path,
+            )
+            source_path = ensure_candidate_cached(candidate)
+        materialized_paths.append(source_path)
+    return materialized_paths
+
+
 def _infer_topic_from_script(script: str) -> str:
     topic_match = re.search(r"(?im)^Topic:\s*(.+?)\s*$", script)
     if topic_match:
@@ -550,24 +605,24 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
     time.sleep(API_COOLDOWN)
 
     # 4 — Scene images
-    local_images = _clip_select_images(scenes, len(scenes)) if parsed_doc.get("scenes") else []
-    if local_images:
-        step(f"4/8 local Elvis images x{len(local_images)}")
+    selected_scene_images = _collect_scene_images(topic, scenes) if parsed_doc.get("scenes") else []
+    if selected_scene_images:
+        step(f"4/8 matched scene images x{len(selected_scene_images)}")
     else:
         step(f"4/8 scene images gpt-image-1 x{len(scenes)}")
-    if not local_images and not openai_client:
+    if not selected_scene_images and not openai_client:
         raise RuntimeError("OPENAI_API_KEY required for image generation")
     images_dir = out_dir / "images"
     images_dir.mkdir(exist_ok=True)
     image_paths = []
     _fallback_img: Optional[Path] = None
-    if local_images:
-        for i, src in enumerate(local_images):
+    if selected_scene_images:
+        for i, src in enumerate(selected_scene_images):
             img_path = images_dir / f"scene_{i + 1:02d}{src.suffix}"
             shutil.copy(src, img_path)
             _fallback_img = img_path
             image_paths.append(img_path)
-            logger.info(f"  [5a] {i + 1}/{len(local_images)} copied from {src.name}")
+            logger.info(f"  [5a] {i + 1}/{len(selected_scene_images)} copied from {src.name}")
     else:
         for i, scene in enumerate(scenes):
             desc = scene.get("description", f"scene {i + 1}")
@@ -615,7 +670,7 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
 
         thumb_path = out_dir / "thumbnail.png"
         try:
-            if local_images and image_paths:
+            if selected_scene_images and image_paths:
                 shutil.copy(image_paths[0], thumb_path)
             else:
                 req_data = json.dumps({"model": "gpt-image-1", "prompt": thumb_prompt[:400], "size": "1024x1792", "quality": "medium", "n": 1}).encode()
