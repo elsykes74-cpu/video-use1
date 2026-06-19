@@ -78,6 +78,10 @@ _load_env(QUICKKICK_DIR / ".env", override=True)
 _load_env(HERMES_HOME / ".env")
 
 IMAGE_MODEL = os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-1").strip() or "gpt-image-1"
+OPENROUTER_IMAGE_MODEL = os.getenv(
+    "OPENROUTER_IMAGE_MODEL",
+    "openai/gpt-image-1",
+).strip() or "openai/gpt-image-1"
 TARGET_SIZE = os.getenv("ELVIS_LIBRARY_IMAGE_SIZE", "1024x1536").strip() or "1024x1536"
 IMAGE_QUALITY = os.getenv("ELVIS_LIBRARY_IMAGE_QUALITY", "high").strip() or "high"
 MAX_RETRIES = int(os.getenv("ELVIS_LIBRARY_MAX_RETRIES", "3"))
@@ -158,6 +162,13 @@ def get_openai_client() -> OpenAI:
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY not found in environment.")
     return OpenAI(api_key=api_key)
+
+
+def get_openrouter_client() -> OpenAI:
+    api_key = os.getenv("OPENROUTER_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("OPENROUTER_API_KEY not found in environment.")
+    return OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
 
 
 def load_state() -> dict:
@@ -291,7 +302,7 @@ def finalize_vertical_canvas(temp_path: Path, dest: Path) -> None:
     composite.convert("RGB").save(dest, format="PNG", optimize=True)
 
 
-def restore_one(client: OpenAI, src_path: Path, dest: Path) -> tuple[str, int, str]:
+def restore_one(client: OpenAI, src_path: Path, dest: Path, *, model: str = IMAGE_MODEL) -> tuple[str, int, str]:
     last_error = ""
     for attempt in range(1, MAX_RETRIES + 1):
         try:
@@ -299,7 +310,7 @@ def restore_one(client: OpenAI, src_path: Path, dest: Path) -> tuple[str, int, s
             image_stream = io.BytesIO(image_bytes)
             image_stream.name = src_path.name
             response = client.images.edit(
-                model=IMAGE_MODEL,
+                model=model,
                 image=image_stream,
                 prompt=RESTORE_PROMPT,
                 size=TARGET_SIZE,
@@ -319,6 +330,26 @@ def restore_one(client: OpenAI, src_path: Path, dest: Path) -> tuple[str, int, s
             if attempt < MAX_RETRIES:
                 time.sleep(2 * attempt)
     return "error", MAX_RETRIES, last_error
+
+
+def _restore_or_raise(client: OpenAI, src_path: Path, dest: Path, *, model: str) -> Path:
+    status, _attempts, error = restore_one(client, src_path, dest, model=model)
+    if status != "ok":
+        raise RuntimeError(error or f"Restore failed for {src_path.name}")
+    return dest
+
+
+def restore_with_openai(src_path: Path, dest_path: Path) -> Path:
+    return _restore_or_raise(get_openai_client(), src_path, dest_path, model=IMAGE_MODEL)
+
+
+def restore_with_openrouter(src_path: Path, dest_path: Path) -> Path:
+    return _restore_or_raise(
+        get_openrouter_client(),
+        src_path,
+        dest_path,
+        model=OPENROUTER_IMAGE_MODEL,
+    )
 
 
 def sync_source(force_download: bool = False) -> tuple[dict, list[Path], bool]:

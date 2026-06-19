@@ -51,12 +51,14 @@ from telegram.ext import (
 load_dotenv()
 try:
     from .drive_pool import DriveCandidate, collect_drive_candidates, ensure_candidate_cached
+    from .image_prep import prepare_selected_images
     from .image_matcher import match_scene_images
     from .planner import plan_image_beats
     from .render import assemble_motion_video, reconcile_image_paths
     from .settings import load_settings
 except ImportError:  # pragma: no cover - direct script execution
     from quickkick_bot.drive_pool import DriveCandidate, collect_drive_candidates, ensure_candidate_cached
+    from quickkick_bot.image_prep import prepare_selected_images
     from quickkick_bot.image_matcher import match_scene_images
     from quickkick_bot.planner import plan_image_beats
     from quickkick_bot.render import assemble_motion_video, reconcile_image_paths
@@ -640,12 +642,22 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
     image_paths = []
     _fallback_img: Optional[Path] = None
     if selected_scene_images:
-        for i, src in enumerate(selected_scene_images):
-            img_path = images_dir / f"scene_{i + 1:02d}{src.suffix}"
-            shutil.copy(src, img_path)
-            _fallback_img = img_path
-            image_paths.append(img_path)
-            logger.info(f"  [5a] {i + 1}/{len(selected_scene_images)} copied from {src.name}")
+        selection_plan = {
+            "selections": [
+                {
+                    "scene": i + 1,
+                    "path": str(src),
+                    "score": 1.0,
+                    "source_tier": "matched",
+                }
+                for i, src in enumerate(selected_scene_images)
+            ]
+        }
+        image_paths = prepare_selected_images(selection_plan, images_dir)
+        if image_paths:
+            _fallback_img = image_paths[-1]
+        for i, img_path in enumerate(image_paths):
+            logger.info(f"  [5a] {i + 1}/{len(image_paths)} prepared {img_path.name}")
     else:
         for i, scene in enumerate(scenes):
             desc = scene.get("description", f"scene {i + 1}")
