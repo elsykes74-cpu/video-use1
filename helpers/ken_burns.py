@@ -86,8 +86,8 @@ def build_clip(
     n = max(1, int(duration * fps) - 1)
     e = EFFECTS[effect]
     z = e["z"].replace("{n}", str(n))
-    x = e["x"]
-    y = e["y"]
+    x = e["x"].replace("{n}", str(n))
+    y = e["y"].replace("{n}", str(n))
 
     # Scale to fill output size (upscale if needed), then center-crop.
     scale_crop = (
@@ -149,8 +149,8 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="\n".join(f"  {k}" for k in sorted(EFFECTS)),
     )
-    ap.add_argument("input", type=Path, help="Image file or directory (with --batch)")
-    ap.add_argument("-o", "--output", type=Path, required=True, help="Output MP4 or directory (with --batch)")
+    ap.add_argument("input", type=Path, nargs="?", help="Image file or directory (with --batch)")
+    ap.add_argument("-o", "--output", type=Path, help="Output MP4 or directory (with --batch)")
     ap.add_argument("--effect", choices=sorted(EFFECTS), default="zoom_in", help="Motion effect (default: zoom_in)")
     ap.add_argument("--duration", type=float, default=6.0, help="Clip duration in seconds (default: 6.0)")
     ap.add_argument("--fps", type=int, default=24, help="Frame rate (default: 24)")
@@ -163,6 +163,9 @@ def main() -> None:
         for name in sorted(EFFECTS):
             print(name)
         return
+
+    if not args.input or not args.output:
+        ap.error("input and -o/--output are required unless using --list-effects")
 
     try:
         w_str, h_str = args.size.lower().split("x")
