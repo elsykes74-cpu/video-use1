@@ -356,6 +356,51 @@ def _image_to_data_uri(src_path: Path) -> str:
     return f"data:{mime};base64,{encoded}"
 
 
+def fal_submit_and_wait(
+    model: str,
+    payload: dict,
+    api_key: str,
+    poll_interval: float = 3.0,
+    timeout: float = 180.0,
+) -> dict:
+    """Generic FAL queue submit -> poll status -> fetch result. Returns the
+    completed result JSON. Shared by every FAL-backed call in this project
+    (image restore here, text-to-image generation in pipeline.py) so there's
+    one place that knows the real FAL REST protocol."""
+    import httpx
+
+    headers = {"Authorization": f"Key {api_key}"}
+    submit_resp = httpx.post(
+        f"https://queue.fal.run/{model}",
+        headers=headers,
+        json=payload,
+        timeout=30.0,
+    )
+    submit_resp.raise_for_status()
+    submission = submit_resp.json()
+    status_url = submission["status_url"]
+    response_url = submission["response_url"]
+
+    deadline = time.time() + timeout
+    status = None
+    while time.time() < deadline:
+        status_resp = httpx.get(status_url, headers=headers, timeout=30.0)
+        status_resp.raise_for_status()
+        status = status_resp.json().get("status")
+        if status == "COMPLETED":
+            break
+        if status in ("IN_QUEUE", "IN_PROGRESS"):
+            time.sleep(poll_interval)
+            continue
+        raise RuntimeError(f"FAL request to {model} returned unexpected status: {status}")
+    if status != "COMPLETED":
+        raise RuntimeError(f"FAL request to {model} timed out after {timeout}s")
+
+    result_resp = httpx.get(response_url, headers=headers, timeout=30.0)
+    result_resp.raise_for_status()
+    return result_resp.json()
+
+
 def restore_with_fal(src_path: Path, dest_path: Path) -> Path:
     """Restore fallback via FAL's clarity-upscaler (queue API), used when
     OpenAI's images.edit hits quota/billing limits. See FAL_RESTORE_MODEL
@@ -363,7 +408,6 @@ def restore_with_fal(src_path: Path, dest_path: Path) -> Path:
     import httpx
 
     api_key = get_fal_key()
-    headers = {"Authorization": f"Key {api_key}"}
     last_error = ""
 
     for attempt in range(1, MAX_RETRIES + 1):
@@ -381,35 +425,13 @@ def restore_with_fal(src_path: Path, dest_path: Path) -> Path:
                 "creativity": 0.3,
                 "resemblance": 0.75,
             }
-            submit_resp = httpx.post(
-                f"https://queue.fal.run/{FAL_RESTORE_MODEL}",
-                headers=headers,
-                json=payload,
-                timeout=30.0,
+            result = fal_submit_and_wait(
+                FAL_RESTORE_MODEL,
+                payload,
+                api_key,
+                poll_interval=FAL_POLL_INTERVAL_SECS,
+                timeout=FAL_POLL_TIMEOUT_SECS,
             )
-            submit_resp.raise_for_status()
-            submission = submit_resp.json()
-            status_url = submission["status_url"]
-            response_url = submission["response_url"]
-
-            deadline = time.time() + FAL_POLL_TIMEOUT_SECS
-            status = None
-            while time.time() < deadline:
-                status_resp = httpx.get(status_url, headers=headers, timeout=30.0)
-                status_resp.raise_for_status()
-                status = status_resp.json().get("status")
-                if status == "COMPLETED":
-                    break
-                if status in ("IN_QUEUE", "IN_PROGRESS"):
-                    time.sleep(FAL_POLL_INTERVAL_SECS)
-                    continue
-                raise RuntimeError(f"FAL restore returned unexpected status: {status}")
-            if status != "COMPLETED":
-                raise RuntimeError(f"FAL restore timed out after {FAL_POLL_TIMEOUT_SECS}s")
-
-            result_resp = httpx.get(response_url, headers=headers, timeout=30.0)
-            result_resp.raise_for_status()
-            result = result_resp.json()
             image_url = (result.get("image") or {}).get("url")
             if not image_url:
                 raise RuntimeError(f"FAL restore response missing image URL: {result}")

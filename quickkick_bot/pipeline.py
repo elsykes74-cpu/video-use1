@@ -57,6 +57,7 @@ try:
     from .planner import plan_image_beats
     from .render import assemble_motion_video, reconcile_image_paths
     from .settings import load_settings
+    from .upscale_library import fal_submit_and_wait, get_fal_key
 except ImportError:  # pragma: no cover - direct script execution
     from quickkick_bot.approval import mark_run_approved, mark_run_rejected, request_approval, wait_for_approval
     from quickkick_bot.drive_pool import DriveCandidate, collect_drive_candidates, ensure_candidate_cached
@@ -65,6 +66,7 @@ except ImportError:  # pragma: no cover - direct script execution
     from quickkick_bot.planner import plan_image_beats
     from quickkick_bot.render import assemble_motion_video, reconcile_image_paths
     from quickkick_bot.settings import load_settings
+    from quickkick_bot.upscale_library import fal_submit_and_wait, get_fal_key
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -97,6 +99,10 @@ ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "").strip()
 ELEVENLABS_MODEL_ID = os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2").strip() or "eleven_multilingual_v2"
 ELEVENLABS_OUTPUT_FORMAT = os.getenv("ELEVENLABS_OUTPUT_FORMAT", "mp3_44100_128").strip() or "mp3_44100_128"
 YOUTUBE_TOKEN_PATH = os.getenv("YOUTUBE_TOKEN_PATH", str(Path.home() / ".verticals" / "youtube_token_elvis.json"))
+# Text-to-image generation fallback, used only when a scene has no local or
+# Drive match at all. FAL is primary now (no OpenAI billing dependency);
+# OpenAI gpt-image-1 is a secondary fallback if FAL itself fails.
+FAL_TEXT_TO_IMAGE_MODEL = os.getenv("FAL_TEXT_TO_IMAGE_MODEL", "fal-ai/flux/schnell").strip() or "fal-ai/flux/schnell"
 SETTINGS = load_settings()
 THUMBNAIL_MIN_SECONDS = SETTINGS.thumbnail_min_seconds
 _ELEVENLABS_VOICE_CACHE: dict[str, str] = {}
@@ -697,6 +703,39 @@ def _synthesize_speech(
 
     raise ValueError(f"Unsupported TTS_PROVIDER: {provider_name}")
 
+# ── Text-to-image generation fallback (no scene/Drive match at all) ──────────
+def _generate_image_fal(prompt: str, width: int, height: int) -> bytes:
+    """Generate an image from a text prompt via FAL's flux/schnell. Used in
+    place of OpenAI's gpt-image-1 so a billing-limited OpenAI account doesn't
+    block this rare fallback path."""
+    api_key = get_fal_key()
+    payload = {
+        "prompt": prompt,
+        "image_size": {"width": width, "height": height},
+        "num_images": 1,
+    }
+    result = fal_submit_and_wait(FAL_TEXT_TO_IMAGE_MODEL, payload, api_key, poll_interval=2.0, timeout=60.0)
+    images = result.get("images") or []
+    if not images or not images[0].get("url"):
+        raise RuntimeError(f"FAL image generation response missing image URL: {result}")
+    image_resp = httpx.get(images[0]["url"], timeout=60.0)
+    image_resp.raise_for_status()
+    return image_resp.content
+
+
+def _generate_scene_image_bytes(prompt: str, width: int, height: int) -> bytes:
+    """Try FAL first, OpenAI gpt-image-1 second. Raises if both fail."""
+    try:
+        return _generate_image_fal(prompt, width, height)
+    except Exception as fal_err:
+        logger.warning(f"[image-gen] FAL failed ({fal_err}) — falling back to OpenAI")
+        if not openai_client:
+            raise RuntimeError(f"FAL failed and OPENAI_API_KEY not set: {fal_err}") from fal_err
+        img_resp = openai_client.images.generate(
+            model="gpt-image-1", prompt=prompt, size=f"{width}x{height}", quality="medium", n=1
+        )
+        return base64.b64decode(img_resp.data[0].b64_json)
+
 # ── Core pipeline ─────────────────────────────────────────────────────────────
 def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -749,9 +788,9 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
     if selected_scene_images:
         step(f"4/8 matched scene images x{len(selected_scene_images)}")
     else:
-        step(f"4/8 scene images gpt-image-1 x{len(scenes)}")
-    if not selected_scene_images and not openai_client:
-        raise RuntimeError("OPENAI_API_KEY required for image generation")
+        step(f"4/8 scene images (FAL/gpt-image-1) x{len(scenes)}")
+    if not selected_scene_images and not (os.getenv("FAL_KEY", "").strip() or openai_client):
+        raise RuntimeError("FAL_KEY or OPENAI_API_KEY required for image generation")
     images_dir = out_dir / "images"
     images_dir.mkdir(exist_ok=True)
     image_paths = []
@@ -780,9 +819,8 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
             saved = False
             for attempt in range(3):
                 try:
-                    img_prompt = _call_openai(_SP_IMG, desc, max_tokens=300)
-                    img_resp = openai_client.images.generate(model="gpt-image-1", prompt=img_prompt, size="1024x1536", quality="medium", n=1)
-                    img_path.write_bytes(base64.b64decode(img_resp.data[0].b64_json))
+                    img_prompt = _call_llm(_SP_IMG, desc, max_tokens=300)
+                    img_path.write_bytes(_generate_scene_image_bytes(img_prompt, 1024, 1536))
                     _fallback_img = img_path
                     saved = True
                     break
@@ -814,7 +852,7 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
 
     # 6 — Thumbnail for long-form videos only
     if audio_duration > THUMBNAIL_MIN_SECONDS:
-        step("6/8 thumbnail gpt-image-1")
+        step("6/8 thumbnail (FAL/gpt-image-1)")
         thumb_prompt = _call_llm(_SP_THUMB, narration, max_tokens=300)
         time.sleep(API_COOLDOWN)
 
@@ -823,17 +861,7 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
             if selected_scene_images and image_paths:
                 shutil.copy(image_paths[0], thumb_path)
             else:
-                req_data = json.dumps({"model": "gpt-image-1", "prompt": thumb_prompt[:400], "size": "1024x1792", "quality": "medium", "n": 1}).encode()
-                req = urllib.request.Request(
-                    "https://api.openai.com/v1/images/generations", data=req_data,
-                    headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}, method="POST"
-                )
-                with urllib.request.urlopen(req) as r:
-                    entry = json.loads(r.read())["data"][0]
-                if entry.get("b64_json"):
-                    thumb_path.write_bytes(base64.b64decode(entry["b64_json"]))
-                else:
-                    thumb_path.write_bytes(urllib.request.urlopen(entry["url"]).read())
+                thumb_path.write_bytes(_generate_scene_image_bytes(thumb_prompt[:400], 1024, 1792))
         except Exception as e:
             logger.warning(f"Thumbnail failed ({e}) — using scene 1")
             if image_paths:
