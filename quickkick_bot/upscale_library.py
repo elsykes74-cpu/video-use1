@@ -78,10 +78,14 @@ _load_env(QUICKKICK_DIR / ".env", override=True)
 _load_env(HERMES_HOME / ".env")
 
 IMAGE_MODEL = os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-1").strip() or "gpt-image-1"
-OPENROUTER_IMAGE_MODEL = os.getenv(
-    "OPENROUTER_IMAGE_MODEL",
-    "openai/gpt-image-1",
-).strip() or "openai/gpt-image-1"
+# FAL is the restore fallback when OpenAI fails (quota/billing). OpenRouter
+# was tried here previously but doesn't work: OpenRouter has no images/edit
+# endpoint at all (it's a chat-completions proxy), so any model string there
+# 404s regardless of name. FAL's clarity-upscaler does real image-to-image
+# enhancement, which is the closer match to what this restore step needs.
+FAL_RESTORE_MODEL = os.getenv("FAL_RESTORE_MODEL", "fal-ai/clarity-upscaler").strip() or "fal-ai/clarity-upscaler"
+FAL_POLL_INTERVAL_SECS = float(os.getenv("FAL_POLL_INTERVAL_SECS", "3"))
+FAL_POLL_TIMEOUT_SECS = float(os.getenv("FAL_POLL_TIMEOUT_SECS", "180"))
 TARGET_SIZE = os.getenv("ELVIS_LIBRARY_IMAGE_SIZE", "1024x1536").strip() or "1024x1536"
 IMAGE_QUALITY = os.getenv("ELVIS_LIBRARY_IMAGE_QUALITY", "high").strip() or "high"
 MAX_RETRIES = int(os.getenv("ELVIS_LIBRARY_MAX_RETRIES", "3"))
@@ -164,11 +168,11 @@ def get_openai_client() -> OpenAI:
     return OpenAI(api_key=api_key)
 
 
-def get_openrouter_client() -> OpenAI:
-    api_key = os.getenv("OPENROUTER_API_KEY", "").strip()
+def get_fal_key() -> str:
+    api_key = os.getenv("FAL_KEY", "").strip()
     if not api_key:
-        raise RuntimeError("OPENROUTER_API_KEY not found in environment.")
-    return OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
+        raise RuntimeError("FAL_KEY not found in environment.")
+    return api_key
 
 
 def load_state() -> dict:
@@ -343,13 +347,90 @@ def restore_with_openai(src_path: Path, dest_path: Path) -> Path:
     return _restore_or_raise(get_openai_client(), src_path, dest_path, model=IMAGE_MODEL)
 
 
-def restore_with_openrouter(src_path: Path, dest_path: Path) -> Path:
-    return _restore_or_raise(
-        get_openrouter_client(),
-        src_path,
-        dest_path,
-        model=OPENROUTER_IMAGE_MODEL,
-    )
+def _image_to_data_uri(src_path: Path) -> str:
+    import mimetypes
+
+    mime, _ = mimetypes.guess_type(str(src_path))
+    mime = mime or "image/png"
+    encoded = base64.b64encode(src_path.read_bytes()).decode("ascii")
+    return f"data:{mime};base64,{encoded}"
+
+
+def restore_with_fal(src_path: Path, dest_path: Path) -> Path:
+    """Restore fallback via FAL's clarity-upscaler (queue API), used when
+    OpenAI's images.edit hits quota/billing limits. See FAL_RESTORE_MODEL
+    comment above for why OpenRouter isn't an option here."""
+    import httpx
+
+    api_key = get_fal_key()
+    headers = {"Authorization": f"Key {api_key}"}
+    last_error = ""
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            payload = {
+                "image_url": _image_to_data_uri(src_path),
+                "prompt": (
+                    "Restore this vintage photograph: remove scratches, dust, and "
+                    "blemishes; balance colors for accurate, vibrant tones; correct "
+                    "lighting and contrast; sharpen facial features and clothing "
+                    "details naturally; preserve the original subject, era "
+                    "authenticity, and identity."
+                ),
+                "upscale_factor": 2,
+                "creativity": 0.3,
+                "resemblance": 0.75,
+            }
+            submit_resp = httpx.post(
+                f"https://queue.fal.run/{FAL_RESTORE_MODEL}",
+                headers=headers,
+                json=payload,
+                timeout=30.0,
+            )
+            submit_resp.raise_for_status()
+            submission = submit_resp.json()
+            status_url = submission["status_url"]
+            response_url = submission["response_url"]
+
+            deadline = time.time() + FAL_POLL_TIMEOUT_SECS
+            status = None
+            while time.time() < deadline:
+                status_resp = httpx.get(status_url, headers=headers, timeout=30.0)
+                status_resp.raise_for_status()
+                status = status_resp.json().get("status")
+                if status == "COMPLETED":
+                    break
+                if status in ("IN_QUEUE", "IN_PROGRESS"):
+                    time.sleep(FAL_POLL_INTERVAL_SECS)
+                    continue
+                raise RuntimeError(f"FAL restore returned unexpected status: {status}")
+            if status != "COMPLETED":
+                raise RuntimeError(f"FAL restore timed out after {FAL_POLL_TIMEOUT_SECS}s")
+
+            result_resp = httpx.get(response_url, headers=headers, timeout=30.0)
+            result_resp.raise_for_status()
+            result = result_resp.json()
+            image_url = (result.get("image") or {}).get("url")
+            if not image_url:
+                raise RuntimeError(f"FAL restore response missing image URL: {result}")
+
+            image_resp = httpx.get(image_url, timeout=60.0)
+            image_resp.raise_for_status()
+
+            temp_dest = dest_path.with_suffix(".tmp.png")
+            temp_dest.write_bytes(image_resp.content)
+            finalize_vertical_canvas(temp_dest, dest_path)
+            temp_dest.unlink(missing_ok=True)
+            return dest_path
+        except Exception as exc:
+            last_error = f"{type(exc).__name__}: {exc}"
+            log(f"ERROR (FAL) attempt {attempt}/{MAX_RETRIES} for {src_path.name}: {last_error}")
+            dest_path.unlink(missing_ok=True)
+            dest_path.with_suffix(".tmp.png").unlink(missing_ok=True)
+            if attempt < MAX_RETRIES:
+                time.sleep(2 * attempt)
+
+    raise RuntimeError(last_error or f"FAL restore failed for {src_path.name}")
 
 
 def sync_source(force_download: bool = False) -> tuple[dict, list[Path], bool]:

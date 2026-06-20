@@ -80,7 +80,7 @@ HISTORY_TURNS = int(os.getenv("HISTORY_TURNS", "10"))
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 openai_client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "").strip()
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-5.4-mini")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "anthropic/claude-sonnet-4-6")
 OPENROUTER_CLIENT = (
     OpenAI(api_key=OPENROUTER_API_KEY, base_url="https://openrouter.ai/api/v1")
     if OPENROUTER_API_KEY else None
@@ -215,6 +215,20 @@ def _call_openai(system: str, user: str, model: str = "gpt-4o-mini", max_tokens:
     if resp.usage:
         _log_usage(model, resp.usage.prompt_tokens, resp.usage.completion_tokens)
     return resp.choices[0].message.content.strip()
+
+def _call_llm(system: str, user: str, max_tokens: int = 2000, openai_model: str = "gpt-4o-mini") -> str:
+    """All script-generation text calls go through here: OpenRouter (Claude, by
+    default — see OPENROUTER_MODEL) first when configured, OpenAI as fallback.
+    This replaces the old behavior where only the initial draft step checked
+    OPENROUTER_CLIENT and polish/scenes/thumbnail-prompt were OpenAI-only —
+    those three would fail outright if the OpenAI account hit a billing limit
+    even with OpenRouter fully configured."""
+    if OPENROUTER_CLIENT:
+        try:
+            return _call_openrouter(system, user, max_tokens=max_tokens)
+        except Exception as exc:
+            logger.warning(f"[llm] OpenRouter call failed ({exc}) — falling back to OpenAI")
+    return _call_openai(system, user, model=openai_model, max_tokens=max_tokens)
 
 # ── Manifest helpers ──────────────────────────────────────────────────────────
 def _write_manifest(out_dir: Path, data: dict) -> None:
@@ -703,16 +717,14 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
         script = parsed_doc["script"]
     elif initial_script:
         script = initial_script
-    elif OPENROUTER_CLIENT:
-        script = _call_openrouter(_SP_DRAFT, f"Write a YouTube Shorts script about: {topic}")
     else:
-        script = _call_openai(_SP_DRAFT, f"Write a YouTube Shorts script about: {topic}")
+        script = _call_llm(_SP_DRAFT, f"Write a YouTube Shorts script about: {topic}")
     (out_dir / "script_draft.txt").write_text(script, encoding="utf-8")
     time.sleep(API_COOLDOWN)
 
     # 2 — Polish
     step("2/8 polish narration")
-    narration = _call_openai(_SP_POLISH, script, model="gpt-4o", max_tokens=2000)
+    narration = _call_llm(_SP_POLISH, script, max_tokens=2000, openai_model="gpt-4o")
     (out_dir / "narration.txt").write_text(narration, encoding="utf-8")
     time.sleep(API_COOLDOWN)
 
@@ -721,7 +733,7 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
     if parsed_doc.get("scenes"):
         scenes = parsed_doc["scenes"]
     else:
-        raw = _call_openai(_SP_SCENES, narration, max_tokens=2000)
+        raw = _call_llm(_SP_SCENES, narration, max_tokens=2000)
         try:
             s, e = raw.index("["), raw.rindex("]") + 1
             scenes = json.loads(raw[s:e])
@@ -803,7 +815,7 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
     # 6 — Thumbnail for long-form videos only
     if audio_duration > THUMBNAIL_MIN_SECONDS:
         step("6/8 thumbnail gpt-image-1")
-        thumb_prompt = _call_openai(_SP_THUMB, narration, max_tokens=300)
+        thumb_prompt = _call_llm(_SP_THUMB, narration, max_tokens=300)
         time.sleep(API_COOLDOWN)
 
         thumb_path = out_dir / "thumbnail.png"

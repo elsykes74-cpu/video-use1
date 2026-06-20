@@ -4,9 +4,9 @@ import logging
 from pathlib import Path
 
 try:
-    from .upscale_library import restore_with_openai, restore_with_openrouter
+    from .upscale_library import restore_with_openai, restore_with_fal
 except ImportError:  # pragma: no cover - direct script execution
-    from quickkick_bot.upscale_library import restore_with_openai, restore_with_openrouter
+    from quickkick_bot.upscale_library import restore_with_openai, restore_with_fal
 
 
 logger = logging.getLogger(__name__)
@@ -24,9 +24,9 @@ def prepare_selected_images(selection_plan: dict, output_dir: Path) -> list[Path
         except Exception as openai_error:
             logger.warning("OpenAI image restore failed for %s: %s", src_path.name, openai_error)
             try:
-                prepared_paths.append(restore_with_openrouter(src_path, dest_path))
-            except Exception as openrouter_error:
-                logger.warning("OpenRouter image restore failed for %s: %s", src_path.name, openrouter_error)
+                prepared_paths.append(restore_with_fal(src_path, dest_path))
+            except Exception as fal_error:
+                logger.warning("FAL image restore failed for %s: %s", src_path.name, fal_error)
                 raise
 
     return prepared_paths

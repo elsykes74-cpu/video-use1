@@ -7,7 +7,7 @@ from quickkick_bot.image_prep import prepare_selected_images
 
 
 class ImagePrepTests(unittest.TestCase):
-    def test_falls_back_to_openrouter_when_openai_restore_fails(self) -> None:
+    def test_falls_back_to_fal_when_openai_restore_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             src = Path(tmpdir) / "source.png"
             src.write_bytes(b"fake")
@@ -28,7 +28,7 @@ class ImagePrepTests(unittest.TestCase):
                 side_effect=RuntimeError("quota"),
             ):
                 with patch(
-                    "quickkick_bot.image_prep.restore_with_openrouter",
+                    "quickkick_bot.image_prep.restore_with_fal",
                     return_value=output_dir / "scene_01.png",
                 ):
                     result = prepare_selected_images(selection_plan, output_dir)
@@ -56,7 +56,7 @@ class ImagePrepTests(unittest.TestCase):
                 side_effect=RuntimeError("quota"),
             ):
                 with patch(
-                    "quickkick_bot.image_prep.restore_with_openrouter",
+                    "quickkick_bot.image_prep.restore_with_fal",
                     side_effect=RuntimeError("provider unavailable"),
                 ):
                     with self.assertRaises(RuntimeError) as error:
