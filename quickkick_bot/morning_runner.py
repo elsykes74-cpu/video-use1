@@ -248,8 +248,10 @@ def main() -> None:
 
     except Exception as e:
         logger.error(f"Morning runner FAILED: {e}", exc_info=True)
+        is_approval_cancel = "not approved" in str(e) or "weak scene matches" in str(e)
+        header = "🛑 <b>Run cancelled (weak-match approval)</b>" if is_approval_cancel else "❌ <b>Morning runner failed</b>"
         _telegram_notify(
-            f"❌ <b>Morning runner failed</b> ({escape(today)})\n"
+            f"{header} ({escape(today)})\n"
             f"Error: {escape(str(e))}\n"
             f"Check: {escape(str(LOG_FILE))}",
             parse_mode="HTML",

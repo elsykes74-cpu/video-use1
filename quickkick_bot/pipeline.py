@@ -50,6 +50,7 @@ from telegram.ext import (
 
 load_dotenv()
 try:
+    from .approval import mark_run_approved, mark_run_rejected, request_approval, wait_for_approval
     from .drive_pool import DriveCandidate, collect_drive_candidates, ensure_candidate_cached
     from .image_prep import prepare_selected_images
     from .image_matcher import match_scene_images
@@ -57,6 +58,7 @@ try:
     from .render import assemble_motion_video, reconcile_image_paths
     from .settings import load_settings
 except ImportError:  # pragma: no cover - direct script execution
+    from quickkick_bot.approval import mark_run_approved, mark_run_rejected, request_approval, wait_for_approval
     from quickkick_bot.drive_pool import DriveCandidate, collect_drive_candidates, ensure_candidate_cached
     from quickkick_bot.image_prep import prepare_selected_images
     from quickkick_bot.image_matcher import match_scene_images
@@ -86,6 +88,7 @@ OPENROUTER_CLIENT = (
 
 # ── Config: Bot + pipeline ────────────────────────────────────────────────────
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+TELEGRAM_NOTIFY_CHAT = os.getenv("TELEGRAM_NOTIFY_CHAT", "").strip()
 DAILY_VIDEO_CAP = int(os.getenv("DAILY_VIDEO_CAP", "10"))
 API_COOLDOWN = int(os.getenv("API_COOLDOWN", "30"))
 TTS_PROVIDER = os.getenv("TTS_PROVIDER", "openai").strip().lower() or "openai"
@@ -117,6 +120,10 @@ ELVIS_BATCH_AUTOCROP_ROOT = ELVIS_UPSCALE_ROOT / "batch_autocropped" # 125-photo
 ELVIS_BATCH_ROOT         = ELVIS_UPSCALE_ROOT / "batch_001"          # original 24-photo subset
 ELVIS_BATCH_CROPPED_ROOT = ELVIS_UPSCALE_ROOT / "batch_001_cropped"  # cropped subset
 WEAK_MATCH_THRESHOLD = 0.8
+# Fixed root for approval_state.json regardless of which entry point (Telegram
+# /generate, HTTP API, or morning_runner.py) started the run — all of them, and
+# the live bot process that receives /approve_run, must agree on this path.
+APPROVAL_ROOT = Path(__file__).resolve().parent
 
 # ── Static system prompts [COST-03] ───────────────────────────────────────────
 _SP_DRAFT = ("You are an expert YouTube Shorts scriptwriter. Write punchy, engaging scripts "
@@ -346,7 +353,119 @@ def _local_image_dirs() -> list[Path]:
     ]
 
 
-def _collect_scene_images(topic: str, scenes: list[dict]) -> list[Path]:
+def _materialize_match_plan(match_plan: dict, strict: bool = True) -> list[Path]:
+    """Resolve a match_plan's selections to real files on disk.
+
+    A selection with no path at all (source_tier == "none") is filled in
+    with the last successfully materialized image when one is available.
+    When none is available yet: if `strict`, raise (used for the final
+    post-approval materialization, where we want a loud failure rather than
+    silently uploading nothing); if not `strict`, skip the scene entirely
+    (used when building the Telegram preview — a missing-candidate scene
+    just isn't drawn, rather than blocking the approval request itself).
+    """
+    materialized_paths: list[Path] = []
+    last_good: Optional[Path] = None
+    for selection in match_plan["selections"]:
+        source_tier = selection.get("source_tier", "")
+        source_path_text = selection.get("local_cache_path") or selection.get("path", "")
+        if not source_path_text:
+            if last_good is not None:
+                logger.warning(f"[5a] scene {selection.get('scene')} has no candidate — reusing previous image")
+                materialized_paths.append(last_good)
+                continue
+            if strict:
+                raise RuntimeError(f"missing image path for scene {selection.get('scene')}")
+            logger.warning(f"[5a] scene {selection.get('scene')} has no candidate — omitting from preview")
+            continue
+        source_path = Path(source_path_text)
+        if source_tier != "local":
+            candidate = DriveCandidate(
+                file_id=selection.get("file_id", ""),
+                name=selection.get("name", source_path.name),
+                score_hint=float(selection.get("score", 0.0)),
+                source_tier=source_tier,
+                local_cache_path=source_path,
+            )
+            source_path = ensure_candidate_cached(candidate)
+        materialized_paths.append(source_path)
+        last_good = source_path
+    return materialized_paths
+
+
+def _resolve_weak_match_with_approval(
+    topic: str,
+    scenes: list[dict],
+    match_plan: dict,
+    query_text: str,
+    run_id: str,
+    root: Path,
+) -> dict:
+    """Pause for Telegram approval on a weak match, per the design doc's
+    "Weak-Match Gate". On approval, rescan Drive once and continue with
+    whatever comes back even if still weak (the user explicitly approved).
+    On rejection, timeout, or delivery failure, cancel the run."""
+    weak_scenes = match_plan["weak_scenes"]
+    weak_text = ", ".join(str(scene) for scene in weak_scenes)
+    logger.warning(f"[approval] weak scene matches ({weak_text}) — requesting Telegram approval for run {run_id}")
+
+    # Lenient (strict=False): a scene with literally no candidate just gets
+    # left out of the preview rather than blocking the approval request —
+    # the point of the contact sheet is to show what *can* be shown.
+    preview_paths = _materialize_match_plan(match_plan, strict=False)
+    try:
+        request_approval(
+            run_id,
+            topic,
+            preview_paths,
+            weak_scenes,
+            root,
+            bot_token=BOT_TOKEN,
+            chat_id=TELEGRAM_NOTIFY_CHAT,
+            timeout_seconds=SETTINGS.approval_timeout_seconds,
+        )
+    except Exception as exc:
+        raise RuntimeError(
+            f"weak scene matches ({weak_text}) require approval but the Telegram alert failed: {exc}"
+        ) from exc
+
+    approved = wait_for_approval(run_id, root, SETTINGS.approval_timeout_seconds)
+    if not approved:
+        raise RuntimeError(
+            f"weak scene matches ({weak_text}) were not approved within "
+            f"{SETTINGS.approval_timeout_seconds}s — run cancelled"
+        )
+
+    logger.info(f"[approval] run {run_id} approved — rescanning Drive once before final selection")
+    fresh_candidates = collect_drive_candidates(query_text, SETTINGS.approval_drive_folder)
+    refreshed_plan = match_scene_images(
+        scenes,
+        _local_image_dirs(),
+        fresh_candidates,
+        weak_threshold=WEAK_MATCH_THRESHOLD,
+    )
+    if refreshed_plan["weak_scenes"]:
+        logger.warning(
+            f"[approval] run {run_id} still has weak scenes {refreshed_plan['weak_scenes']} after "
+            "rescan — continuing anyway because the user explicitly approved this run"
+        )
+    return refreshed_plan
+
+
+def _collect_scene_images(
+    topic: str,
+    scenes: list[dict],
+    run_id: Optional[str] = None,
+    root: Optional[Path] = None,
+) -> list[Path]:
+    # run_id/root are optional so existing direct callers/tests (predating the
+    # Task 6 approval gate) keep working — they only matter if a weak match
+    # actually triggers the Telegram approval flow below.
+    if run_id is None:
+        run_id = uuid.uuid4().hex
+    if root is None:
+        root = APPROVAL_ROOT
+
     local_images, local_images_trusted = _clip_select_images_with_trust(scenes, len(scenes))
     local_match_plan = match_scene_images(
         scenes,
@@ -378,27 +497,9 @@ def _collect_scene_images(topic: str, scenes: list[dict]) -> list[Path]:
         preferred_local_matches_trusted=local_images_trusted,
     )
     if match_plan["weak_scenes"]:
-        weak_text = ", ".join(str(scene) for scene in match_plan["weak_scenes"])
-        raise RuntimeError(f"weak scene matches require approval before upload: {weak_text}")
+        match_plan = _resolve_weak_match_with_approval(topic, scenes, match_plan, query_text, run_id, root)
 
-    materialized_paths: list[Path] = []
-    for selection in match_plan["selections"]:
-        source_tier = selection.get("source_tier", "")
-        source_path_text = selection.get("local_cache_path") or selection.get("path", "")
-        if not source_path_text:
-            raise RuntimeError(f"missing image path for scene {selection.get('scene')}")
-        source_path = Path(source_path_text)
-        if source_tier != "local":
-            candidate = DriveCandidate(
-                file_id=selection.get("file_id", ""),
-                name=selection.get("name", source_path.name),
-                score_hint=float(selection.get("score", 0.0)),
-                source_tier=source_tier,
-                local_cache_path=source_path,
-            )
-            source_path = ensure_candidate_cached(candidate)
-        materialized_paths.append(source_path)
-    return materialized_paths
+    return _materialize_match_plan(match_plan)
 
 
 def _infer_topic_from_script(script: str) -> str:
@@ -585,6 +686,8 @@ def _synthesize_speech(
 # ── Core pipeline ─────────────────────────────────────────────────────────────
 def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
+    run_id = out_dir.name
+    approval_root = APPROVAL_ROOT
 
     parsed_doc = _parse_production_doc(initial_script) if initial_script and _is_production_doc(initial_script) else {"topic": "", "script": "", "scenes": []}
     if parsed_doc.get("topic"):
@@ -630,7 +733,7 @@ def _run_pipeline_sync(topic: str, out_dir: Path, initial_script: str = "") -> d
     time.sleep(API_COOLDOWN)
 
     # 4 — Scene images
-    selected_scene_images = _collect_scene_images(topic, scenes)
+    selected_scene_images = _collect_scene_images(topic, scenes, run_id, approval_root)
     if selected_scene_images:
         step(f"4/8 matched scene images x{len(selected_scene_images)}")
     else:
@@ -823,7 +926,12 @@ async def _ollama_chat(chat_id: int, user_text: str) -> str:
 # ── Telegram handlers ─────────────────────────────────────────────────────────
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
-        "👑 *QuickKick* is online!\n\n/generate [topic] — make a YouTube Short\n/status — daily run count\nOr just chat.",
+        "👑 *QuickKick* is online!\n\n"
+        "/generate [topic] — make a YouTube Short\n"
+        "/status — daily run count\n"
+        "/approve_run <run_id> — approve a weak-match run waiting for review\n"
+        "/reject_run <run_id> — cancel a weak-match run waiting for review\n"
+        "Or just chat.",
         parse_mode="Markdown",
     )
 
@@ -866,6 +974,30 @@ async def generate_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     _bg_tasks.add(task)
     task.add_done_callback(_bg_tasks.discard)
 
+async def approve_run_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not context.args:
+        await update.message.reply_text("Usage: /approve_run <run_id>")
+        return
+    run_id = context.args[0].strip()
+    try:
+        mark_run_approved(run_id, APPROVAL_ROOT)
+        await update.message.reply_text(
+            f"✅ Approved run {run_id}. Rescanning Drive once and resuming with the best available images."
+        )
+    except FileNotFoundError:
+        await update.message.reply_text(f"⚠️ No pending approval found for run {run_id}.")
+
+async def reject_run_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not context.args:
+        await update.message.reply_text("Usage: /reject_run <run_id>")
+        return
+    run_id = context.args[0].strip()
+    try:
+        mark_run_rejected(run_id, APPROVAL_ROOT)
+        await update.message.reply_text(f"🛑 Rejected run {run_id}. The run will be cancelled.")
+    except FileNotFoundError:
+        await update.message.reply_text(f"⚠️ No pending approval found for run {run_id}.")
+
 async def chat_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not update.message or not update.message.text:
         return
@@ -887,6 +1019,8 @@ async def _async_main() -> None:
     ptb_app.add_handler(CommandHandler("start", start_command))
     ptb_app.add_handler(CommandHandler("status", status_command))
     ptb_app.add_handler(CommandHandler("generate", generate_command))
+    ptb_app.add_handler(CommandHandler("approve_run", approve_run_command))
+    ptb_app.add_handler(CommandHandler("reject_run", reject_run_command))
     ptb_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat_handler))
 
     api_runner = web.AppRunner(_build_api_app())
