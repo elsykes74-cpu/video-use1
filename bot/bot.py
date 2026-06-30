@@ -268,8 +268,8 @@ async def remind_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         )
         return
 
-    state = _load_state()
     _register_chat(update.effective_chat.id)
+    state = _load_state()  # reload after registration so chat_id is present
     if t_str not in state.get("reminders", []):
         state.setdefault("reminders", []).append(t_str)
         _save_state(state)
