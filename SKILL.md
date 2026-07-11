@@ -78,6 +78,7 @@ Helpers (`helpers/transcribe.py`, `helpers/render.py`, etc.) live alongside this
 - **`render.py <edl.json> -o <out>`** — per-segment extract → concat → overlays (PTS-shifted) → subtitles LAST. `--preview` for 720p fast. `--build-subtitles` to generate master.srt inline.
 - **`grade.py <in> -o <out>`** — ffmpeg filter chain grade. Presets + `--filter '<raw>'` for custom.
 - **`ken_burns.py <photo> -o <clip.mp4>`** — convert a still photo to a video clip with Ken Burns zoom/pan motion. `--effect zoom_in|zoom_out|pan_right|pan_left|pan_up|ken_burns`. `--duration` (default 6s). `--size 1080x1920` for vertical output. `--batch` to process a whole folder of images. Output is a standard MP4 with silent audio — drop it into `sources` in `edl.json` like any video clip.
+- **`youtube_stats.py`** — fetch YouTube channel analytics via YouTube Data API v3. Reads `YOUTUBE_API_KEY` / `YOUTUBE_CHANNEL_ID` from `.env`. Outputs channel overview (subscribers, total views, video count) + per-video stats (views, likes, comments) for recent uploads. `--max-videos N` (default 5). Also importable: `channel_stats(key, id)` and `recent_videos(key, id, n)` return dicts for programmatic use.
 
 For animations, create `<edit>/animations/slot_<id>/` with `Bash` and spawn a sub-agent via the `Agent` tool.
 

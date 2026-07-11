@@ -320,52 +320,93 @@ async def forget_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 def _fetch_youtube_stats() -> str:
     if not YT_API_KEY or not YT_CHANNEL_ID:
         return (
-            "YouTube stats not configured.\n\n"
-            "Add to your .env:\n"
-            "  YOUTUBE_API_KEY=your_key\n"
-            "  YOUTUBE_CHANNEL_ID=UCxxxxxxxx\n\n"
-            "Get a free key at console.cloud.google.com (enable YouTube Data API v3).\n"
-            "Find your channel ID at youtube.com/account_advanced."
+            "YouTube stats not configured\\.\n\n"
+            "Add to your \\.env:\n"
+            "  YOUTUBE\\_API\\_KEY=your\\_key\n"
+            "  YOUTUBE\\_CHANNEL\\_ID=UCxxxxxxxx\n\n"
+            "Free key: console\\.cloud\\.google\\.com \\(enable YouTube Data API v3\\)\n"
+            "Channel ID: youtube\\.com/account\\_advanced"
         )
     try:
-        # Latest video
-        r = requests.get(
+        # Channel overview
+        rc = requests.get(
+            "https://www.googleapis.com/youtube/v3/channels",
+            params={"part": "statistics,snippet", "id": YT_CHANNEL_ID, "key": YT_API_KEY},
+            timeout=10,
+        )
+        rc.raise_for_status()
+        ch_item = rc.json()["items"][0]
+        ch_name = ch_item["snippet"]["title"]
+        chs = ch_item["statistics"]
+        subs = int(chs.get("subscriberCount", 0))
+        total_views = int(chs.get("viewCount", 0))
+        vid_count = int(chs.get("videoCount", 0))
+
+        # Recent 5 videos
+        rs = requests.get(
             "https://www.googleapis.com/youtube/v3/search",
             params={
                 "part": "snippet",
                 "channelId": YT_CHANNEL_ID,
                 "order": "date",
-                "maxResults": 1,
+                "maxResults": 5,
                 "type": "video",
                 "key": YT_API_KEY,
             },
             timeout=10,
         )
-        r.raise_for_status()
-        items = r.json().get("items", [])
-        if not items:
-            return "No videos found on your channel yet."
+        rs.raise_for_status()
+        search_items = rs.json().get("items", [])
 
-        video_id = items[0]["id"]["videoId"]
-        title = items[0]["snippet"]["title"]
-        published = items[0]["snippet"]["publishedAt"][:10]
+        if not search_items:
+            return (
+                f"*{ch_name}*\n"
+                f"\U0001f465 {subs:,} subs · \U0001f441 {total_views:,} views · \U0001f4f9 {vid_count:,} videos\n\n"
+                "No videos found yet."
+            )
 
-        # Video stats
-        r2 = requests.get(
+        video_ids = ",".join(i["id"]["videoId"] for i in search_items)
+        snippets = {i["id"]["videoId"]: i["snippet"] for i in search_items}
+
+        rv = requests.get(
             "https://www.googleapis.com/youtube/v3/videos",
-            params={"part": "statistics", "id": video_id, "key": YT_API_KEY},
+            params={"part": "statistics", "id": video_ids, "key": YT_API_KEY},
             timeout=10,
         )
-        r2.raise_for_status()
-        s = r2.json()["items"][0]["statistics"]
+        rv.raise_for_status()
 
-        return (
-            f"*Latest video* ({published})\n"
-            f"{title}\n\n"
-            f"Views: {int(s.get('viewCount', 0)):,}\n"
-            f"Likes: {int(s.get('likeCount', 0)):,}\n"
-            f"Comments: {int(s.get('commentCount', 0)):,}"
-        )
+        videos = []
+        for item in rv.json().get("items", []):
+            vid_id = item["id"]
+            s = item["statistics"]
+            snip = snippets.get(vid_id, {})
+            videos.append({
+                "id": vid_id,
+                "title": snip.get("title", "Unknown"),
+                "published": snip.get("publishedAt", "")[:10],
+                "views": int(s.get("viewCount", 0)),
+                "likes": int(s.get("likeCount", 0)),
+                "comments": int(s.get("commentCount", 0)),
+            })
+        videos.sort(key=lambda v: v["published"], reverse=True)
+        top_id = max(videos, key=lambda v: v["views"])["id"] if videos else None
+
+        lines = [
+            f"*{ch_name}*",
+            f"\U0001f465 {subs:,} subs · \U0001f441 {total_views:,} views · \U0001f4f9 {vid_count:,} videos",
+            "",
+            "*Recent uploads:*",
+        ]
+        for v in videos:
+            star = " ⭐" if v["id"] == top_id else ""
+            lines.append(
+                f"\n*{v['title']}{star}*\n"
+                f"{v['published']} · \U0001f441 {v['views']:,} · \U0001f44d {v['likes']:,} · \U0001f4ac {v['comments']:,}\n"
+                f"youtu\\.be/{v['id']}"
+            )
+
+        return "\n".join(lines)
+
     except requests.RequestException as e:
         return f"Could not reach YouTube API: {e}"
     except (KeyError, IndexError, ValueError) as e:
