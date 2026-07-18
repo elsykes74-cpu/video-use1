@@ -1,6 +1,11 @@
 name: mj
 description: Michael Jackson tribute and history content for TikTok and YouTube Shorts
 
+video:
+  target_duration_seconds: 70  # ~1:10 runtime, per project spec
+  aspect_ratio: "9:16"
+  format: "vertical short-form"
+
 script:
   tone: "high-energy and celebratory — honor MJ's genius with the enthusiasm his music deserves"
   pacing: "fast, punchy, match the energy of his music"
@@ -63,7 +68,7 @@ captions:
 music:
   mood: "upbeat, pop, energetic"
   energy: "high"
-  duck_factor: 0.10
+  duck_factor: 0.015  # set per request: background music very low, "1.5 volume" -- read as 1.5%. Confirm against QuickKick's actual param scale once source is available.
 
 thumbnail:
   layout: "title_lower_third"
