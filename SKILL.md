@@ -312,6 +312,33 @@ End-to-end pipeline for turning raw TikTok concert footage into a branded, narra
 
 ### Pipeline (in order)
 
+**0. Research & Script (NotebookLM)**
+Before touching any video, build your script in [NotebookLM](https://notebooklm.google.com):
+
+1. **Create a notebook** for the specific MJ era/tour/moment
+2. **Upload sources** — Wikipedia articles, concert reviews, fan accounts, interview transcripts, setlists, tour programs. The more specific the better (e.g. "HIStory World Tour 1996-97 fan reactions")
+3. **Generate the script** using this prompt template:
+```
+Write a 25-30 second emotional voiceover narration for a TikTok video showing [DESCRIBE THE FOOTAGE — e.g. "Michael Jackson pulling a fan onto the stage during the HIStory tour and embracing her while the crowd goes wild"].
+
+Tone: cinematic, reverent, second-person. Make the viewer feel like THEY are in that moment.
+Structure: hook question → what's happening → emotional impact → legacy line
+Style: short punchy sentences. No filler. Every word earns its place.
+Do NOT mention song titles or dates — keep it timeless.
+End with a line about how we still feel this today.
+```
+4. **Refine** — ask follow-up questions: "make it more emotional", "shorten to 20 seconds", "make the hook stronger"
+5. **Use Audio Overview** to hear a two-person conversation about the footage context — mine it for angles and facts you hadn't considered
+6. Copy the final script → paste into ElevenLabs (Step 5)
+
+**NotebookLM source library to build over time:**
+- MJ HIStory tour reviews + setlists
+- MJ Dangerous tour documentation
+- Rolling Stone / NME concert reviews
+- Fan accounts from r/MichaelJackson
+- MJ interviews about connecting with fans
+- Grammy / award show performance transcripts
+
 **1. Ingest**
 - Accept upload or Google Drive link (`gdown` for Drive: `gdown --fuzzy "<share_url>" -O input.mp4`)
 - Probe with static FFmpeg ffprobe: dimensions, duration, codec
