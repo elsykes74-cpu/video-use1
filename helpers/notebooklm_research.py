@@ -38,7 +38,7 @@ def _slug(topic: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", topic.lower()).strip("_")[:60]
 
 
-def _gemini_generate(api_key: str, prompt: str, model: str = "gemini-1.5-pro") -> str:
+def _gemini_generate(api_key: str, prompt: str, model: str = "gemini-2.5-flash") -> str:
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     r = requests.post(
         url,
