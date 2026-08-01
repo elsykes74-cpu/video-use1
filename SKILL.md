@@ -306,6 +306,105 @@ Append one section per session at `<edit>/project.md`:
 
 On startup, read `project.md` if it exists and summarize the last session in one sentence before asking whether to continue.
 
+## FOREVER MICHAEL TikTok Workflow
+
+End-to-end pipeline for turning raw TikTok concert footage into a branded, narrated, captioned 4K post.
+
+### Pipeline (in order)
+
+**1. Ingest**
+- Accept upload or Google Drive link (`gdown` for Drive: `gdown --fuzzy "<share_url>" -O input.mp4`)
+- Probe with static FFmpeg ffprobe: dimensions, duration, codec
+- Static FFmpeg lives in scratchpad at `ffmpeg-7.0.2-amd64-static/` (downloaded from johnvansickle.com if not present)
+
+**2. Watermark removal**
+- User annotates screenshot with red circle around watermark
+- Extract a frame, eyeball coordinates → `crop=W:H:X:Y`
+- FFmpeg filter: `split[base][wm];[wm]crop=W:H:X:Y,boxblur=15:5[blurred];[base][blurred]overlay=X:Y`
+- Use `boxblur`, NOT `avgblur` (avgblur absent in static FFmpeg 7.0.2)
+
+**3. FOREVER MICHAEL logo overlay**
+- Logo: white-on-black PNG (`79239fd0-1000086052.jpg` in uploads)
+- Make black transparent with PIL (`pixels where R,G,B < 40 → alpha=0`)
+- Scale to ~180px wide, place centered over watermark coordinates
+- FFmpeg: `[0:v]split[base][bg];[bg]crop=...,boxblur=...[blurred];[base][blurred]overlay=...[cleaned];[1:v]scale=180:179[logo];[cleaned][logo]overlay=X:Y`
+
+**4. Build 3-segment structure**
+
+| Segment | Duration | Source |
+|---|---|---|
+| Intro title card | 9s | PIL-rendered PNG → `-loop 1` FFmpeg, fade in/out |
+| Main footage | original × 1.25 (~80% speed) | `setpts=1.25*PTS`, `atempo=0.8`, `volume=0.25` |
+| FOREVER MICHAEL outro | 9s | Logo centered on black PNG → `-loop 1` FFmpeg |
+
+Concat with `ffmpeg -f concat -safe 0 -i list.txt`
+
+Intro card style: black background, white regular font top lines, gold bold (`255,215,80`) on "Michael Jackson?", PIL DejaVuSans-Bold, centered, y≈780/855/940 in 1080×1920
+
+**5. ElevenLabs voiceover**
+- Key: `ELEVENLABS_API_KEY` in `.env`
+- Voice: **Young Jamal** — `voice_id: 6OzrBCQf8cjERkYgzSg8`
+- Endpoint: `POST /v1/text-to-speech/{voice_id}/with-timestamps` → returns `audio_base64` + `alignment`
+- Settings: `stability=0.45, similarity_boost=0.80, style=0.35, use_speaker_boost=True`
+- Model: `eleven_multilingual_v2`
+- The `alignment` dict has `characters`, `character_start_times_seconds`, `character_end_times_seconds`
+
+**6. ASS captions from alignment**
+- Group characters → words (split on space/newline)
+- Chunk 4 words per caption line, ALL CAPS
+- Add `VO_DELAY` (2.0s) to all timestamps
+- ASS style for 4K (PlayResX=1080, PlayResY=1920):
+```
+Style: Cap,DejaVu Sans,62,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,1,0,0,0,100,100,2,0,1,4,2,2,40,40,720,1
+```
+- `MarginV=720` → captions land just below center (1920-720=1200px from top = 62% down), above TikTok UI
+- `MarginV=80` → bottom of frame (for reference)
+- Use `ass` filter NOT `subtitles` filter (subtitles silently fails in some builds)
+
+**7. Audio auto-duck mix**
+VO starts at t=2s (adelay=2000ms), ends at `VO_duration + 2.0s`.
+```
+[bg_audio]volume=volume='if(lt(t,2),4.0,if(lte(t,VO_END),0.32,if(lte(t,VO_END+2),(t-VO_END)/2.0*3.68+0.32,4.0)))':eval=frame[bg];
+[vo]adelay=2000|2000,volume=1.0[vo];
+[bg][vo]amix=inputs=2:duration=first:dropout_transition=1[mixed]
+```
+- `4.0x` of NO_VO audio = 100% original (crowd at 25% in seg_main × 4 = 100%)
+- `0.32x` = ~8% original (ducked under narrator)
+- 2-second ramp back up after VO ends
+
+**8. 4K encode**
+- Upscale: `scale=2160:3840:flags=lanczos`
+- Codec: `libx265 -preset fast -crf 28 -pix_fmt yuv420p -tag:v hvc1`
+- Audio: `aac -b:a 192k`
+- Target file size: ~28MB for 70s at these settings (fits 30MB SendUserFile limit)
+- Encode time: ~6 min at 4K H.265 on CPU
+
+**9. TikTok copy formula**
+- **Title**: hook question or dramatic statement (first line = TikTok Title field)
+- **Description**: mirrors the VO script, 3-5 short paragraphs
+- **Hashtags**: `#MichaelJackson #MJForever #ForeverMichael #KingOfPop #Legend #MJ #17Years #Concert #GOAT #fyp #foryou #viral #mjconcert #michaeljacksonfan #iconic #emotional #mjhistory #neverforget #mjlove`
+- **Pinned comment**: question that drives replies + emoji reaction (e.g. "Drop a 🕊️ if you would have passed out 😭 What song was he performing? 👇")
+
+### Key assets
+- FOREVER MICHAEL logo: `uploads/79239fd0-1000086052.jpg` (white silhouette + text on black)
+- Young Jamal voice ID: `6OzrBCQf8cjERkYgzSg8`
+- Static FFmpeg: download from `https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz`
+
+### Voiceover script template (MJ concert fan-pull moment)
+```
+Imagine standing in a crowd of 70,000 people...
+and suddenly, Michael Jackson points at you.
+Not the person next to you. You.
+This is what that moment looked like.
+This is what his music did to people — it didn't just move you.
+It broke you open.
+Tears. Screaming. Strangers holding each other like family.
+No stage, no screen, no algorithm has ever touched what Michael created in that room.
+This wasn't a concert.
+This was a religious experience.
+And 17 years later... we're still not over it.
+```
+
 ## Anti-patterns
 
 Things that consistently fail regardless of style:
