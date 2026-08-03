@@ -1,0 +1,30 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,DejaVu Sans,58,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,60,60,80,1
+Style: Hook,DejaVu Sans,92,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,5,2,5,60,60,0,1
+Style: Outro,DejaVu Sans,72,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,5,60,60,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+
+Dialogue: 0,0:00:00.00,0:00:02.00,Hook,,0,0,0,,HE WAS 15 YEARS OLD.
+Dialogue: 0,0:00:01.60,0:00:03.30,Default,,0,0,0,,Standing on The Tonight Show stage.
+Dialogue: 0,0:00:03.60,0:00:05.40,Default,,0,0,0,,In front of millions of people.
+Dialogue: 0,0:00:05.72,0:00:08.20,Default,,0,0,0,,This is Michael Jackson\Nwith the Jackson Five.
+Dialogue: 0,0:00:08.62,0:00:10.10,Default,,0,0,0,,Nineteen seventy-four.
+Dialogue: 0,0:00:10.36,0:00:11.40,Default,,0,0,0,,Look at his eyes.
+Dialogue: 0,0:00:11.60,0:00:12.80,Default,,0,0,0,,Watch how he moves.
+Dialogue: 0,0:00:12.98,0:00:14.50,Default,,0,0,0,,That is not a nervous kid.
+Dialogue: 0,0:00:14.68,0:00:16.50,Default,,0,0,0,,That is a king being crowned.
+Dialogue: 0,0:00:16.70,0:00:18.50,Default,,0,0,0,,He was fifteen years old.
+Dialogue: 0,0:00:18.72,0:00:20.62,Default,,0,0,0,,And Michael Jackson was already
+Dialogue: 0,0:00:20.66,0:00:22.50,Default,,0,0,0,,the greatest performer alive.
+Dialogue: 0,0:00:22.98,0:00:24.60,Default,,0,0,0,,Some people are just born for it.
+Dialogue: 0,0:00:25.12,0:00:27.10,Default,,0,0,0,,Follow for more moments like this.
+Dialogue: 0,0:01:02.00,0:01:06.00,Outro,,0,0,0,,@mjforeverlove0
