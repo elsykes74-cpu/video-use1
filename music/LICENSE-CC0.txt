@@ -1,0 +1,11 @@
+Music in this folder is CC0-1.0 (public domain dedication).
+Source: https://github.com/SoundSafari/CC0-1.0-Music  -> freepd.com/
+Original aggregator: https://freepd.com
+CC0 requires no attribution and permits commercial use, including
+monetized YouTube. Verify independently before monetizing.
+
+  cue1_cold_journey.mp3   <- "Cold Journey"
+  cue2_fake_it.mp3        <- "Fake It Til You Fake It"
+  cue3_requiem.mp3        <- "Burt's Requiem"
+  alt_gambling.mp3        <- "A Good Bass for Gambling"
+  alt_ancient_rite.mp3    <- "Ancient Rite"

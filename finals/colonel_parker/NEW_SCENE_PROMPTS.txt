@@ -1,0 +1,160 @@
+THE MAN WHO OWNED THE KING - ADDITIONAL SCENE PROMPTS
+16:9 landscape | Nano Banana 2 | x2 variants | 0 credits
+
+Generate in Google Flow. Settings already correct: 16:9, Nano Banana 2, x2.
+For any prompt marked [REF], attach the reference image named before
+generating - use the + button, search, Add to Prompt.
+
+==========================================================================
+PART A - REPLACEMENT FOR THE "MOVIE ELVIS" PROBLEM
+==========================================================================
+
+The current young-Elvis frame reads as a modern actor playing Elvis rather
+than Elvis. That happens because generators default to the most photographed
+recent depiction. Fix: describe a PERIOD PHOTOGRAPH, not a person - film
+stock, era, and camera do more work than the face description.
+
+--------------------------------------------------------------------------
+A1  REPLACES the 1955 Memphis backstage scene            [REF: 68elvis2]
+--------------------------------------------------------------------------
+An authentic 1955 press photograph, not a modern film still. Backstage
+corridor of a small Memphis music venue, warm tungsten light, exposed brick,
+faded hand-set gig posters. A lean twenty-year-old Southern singer stands in
+the foreground, slim and slightly awkward, dark hair swept into an early
+pompadour, short sideburns, heavy-lidded eyes, a loud open-collar shirt.
+Match his facial structure to the attached reference but make him younger
+and thinner. Behind him and to the left, a large heavyset older man in a
+rumpled suit watches him. Shot on Kodak Tri-X pushed, 50mm, slight grain,
+period-correct contrast, the imperfect framing of a working press
+photographer. Not glamorous, not cinematic, not a movie poster. No text,
+no watermark, no logos.
+
+==========================================================================
+PART B - EIGHT NEW SCENES
+==========================================================================
+Insert positions refer to the CURRENT ten-scene running order.
+
+--------------------------------------------------------------------------
+N1  INSERT AFTER SCENE 1  (Breda street)     -- the crossing
+--------------------------------------------------------------------------
+The lower steerage deck of a transatlantic cargo ship at night in 1929, seen
+from inside. Wet iron plating, rivets, a single caged bulb throwing hard
+shadows. Crates and coiled rope. In the far corner, almost lost in darkness,
+a young man sits alone against the hull with his knees drawn up, face turned
+away from the light, no luggage beside him. Cold blue-grey palette, heavy
+grain, 28mm wide lens, deep shadow. The feeling of a man who does not exist
+on any passenger list. Photorealistic, cinematic. No text, no watermark,
+no logos.
+
+--------------------------------------------------------------------------
+N2  INSERT AFTER N1                          -- the stolen name
+--------------------------------------------------------------------------
+An extreme close-up of a 1930s United States Army enlistment document on a
+scarred wooden desk, lit by a single desk lamp. A fountain pen rests across
+it. The typewritten name on the form is the visual subject, slightly out of
+focus at the edges, the paper fibrous and real. A man's heavy hand rests at
+the edge of the frame, not writing yet. 85mm macro, shallow depth of field,
+warm tungsten, deep surrounding darkness. The quiet moment a life is
+borrowed. Photorealistic, cinematic. No text that can be read clearly,
+no watermark, no logos.
+
+--------------------------------------------------------------------------
+N3  INSERT AFTER SCENE 2  (carnival)         -- the family left behind
+--------------------------------------------------------------------------
+The interior of a modest working-class Dutch kitchen in the 1930s, grey
+daylight through a small window. An older woman in a plain dress and apron
+sits at a scrubbed wooden table, hands folded, looking at an empty chair
+across from her. A framed photograph face-down on the sideboard. The room is
+scrupulously clean and completely still. Cool desaturated palette, 35mm,
+natural window light only, no artificial fill. The specific silence of a
+family that stopped receiving letters. Photorealistic, cinematic. No text,
+no watermark, no logos.
+
+--------------------------------------------------------------------------
+N4  INSERT AFTER SCENE 4  (contract)         -- the world he never toured
+--------------------------------------------------------------------------
+A vast European concert crowd in 1964 photographed from behind and above at
+night, thousands of young faces lit only by stage light, arms raised toward
+a stage that is empty and dark. Banners and flags in the crowd. The stage
+itself is bare - no performer, no band, just bare boards and unlit rigging.
+Wide 24mm lens, high angle, cold stage-blue light against warm crowd tones,
+heavy atmosphere and haze. The image of an audience waiting for someone who
+will never come. Photorealistic, cinematic. No text, no watermark, no logos.
+
+--------------------------------------------------------------------------
+N5  INSERT AFTER N4                          -- the refused offers
+--------------------------------------------------------------------------
+A 1960s office desk shot from directly overhead, covered edge to edge in
+international telegrams, airmail envelopes with foreign stamps, and typed
+contract offers, many stacked and unopened, some stamped and set aside. A
+heavy glass ashtray with a dead cigar. A rotary telephone with the receiver
+off the hook. Warm overhead light, hard shadows between the papers. 50mm,
+flat overhead composition. The visual weight of dozens of refusals.
+Photorealistic, cinematic. No readable text, no watermark, no logos.
+
+--------------------------------------------------------------------------
+N6  INSERT AFTER SCENE 7  (Vegas stage)      -- the grind
+--------------------------------------------------------------------------
+The Las Vegas Hilton showroom photographed after a performance in the
+mid-1970s, completely empty. Hundreds of tables with crumpled napkins,
+abandoned glasses, and overturned chairs. The stage at the far end is lit by
+a single work light. Confetti and a dropped scarf on the floor. Cold grey
+light bleeding in from a service door on the left. Wide 24mm lens, deep
+perspective down the length of the empty room. The exhaustion that follows
+six hundred consecutive shows. Photorealistic, cinematic. No text, no
+watermark, no logos.
+
+--------------------------------------------------------------------------
+N7  INSERT AFTER N6                          -- the confrontation
+--------------------------------------------------------------------------
+Two men facing each other in a dim Las Vegas backstage dressing room in the
+mid-1970s, photographed from the side so both are in profile. On the left, a
+performer in a white rhinestone jumpsuit, mid-thirties to early forties,
+heavier, tense, one hand gripping the back of a chair. On the right, a large
+heavyset bald older man in a short-sleeved shirt, entirely calm, hands
+loose at his sides. A mirror surrounded by bare bulbs behind them. The
+younger man is lit warm, the older man is lit cold. Neither is speaking.
+85mm, shallow focus, high contrast. Photorealistic, cinematic. No text,
+no watermark, no logos.
+
+--------------------------------------------------------------------------
+N8  INSERT BEFORE SCENE 8  (plane)           -- Graceland, August 1977
+--------------------------------------------------------------------------
+The wrought-iron music gates of a large white Southern mansion at dusk in
+August 1977, photographed from outside looking in. Hundreds of mourners
+pressed against and around the gates, many holding flowers, some sitting on
+the grass verge. Police barricades. The house is visible at the end of the
+drive, lit from within. Humid Memphis evening light, warm sodium streetlamps
+against deep blue dusk. 35mm, documentary framing from within the crowd.
+Grief on a public scale. Photorealistic, cinematic. No text, no watermark,
+no logos.
+
+==========================================================================
+PART C - IF YOU WANT MORE, THESE ARE THE REMAINING GAPS
+==========================================================================
+Not written as prompts yet - tell me which you want.
+
+  - Vernon signing the estate contract, days after the funeral
+  - The 1983 courtroom / the estate's fraud suit
+  - 1980: the Dutch family recognising him in a magazine photograph
+  - Parker's death certificate, 1997, the birth name typed on it
+  - A pressing plant or record wall standing in for a billion records sold
+
+==========================================================================
+NOTES
+==========================================================================
+
+1. Eight new scenes takes you from 10 to 18. At the current 9:17 narration
+   that is ~31s per scene, which is a healthier documentary rhythm than
+   the current 56s average. If you also lengthen the script, aim for
+   roughly 35-45s per image.
+
+2. Adding scenes means updating manifest.json - each needs an entry with
+   ken_burns, overlay and weight. Send me the files and I will do it.
+
+3. Generate x2 variants of everything. Roughly one in five needs a reroll.
+
+4. The period-photograph framing in A1 is the important trick. Naming the
+   film stock and the camera pushes the model away from modern film-still
+   aesthetics, which is what makes AI Elvis look like an actor playing
+   Elvis rather than the man himself.

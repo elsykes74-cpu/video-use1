@@ -1,0 +1,259 @@
+{
+  "job_id": "elvis_colonel_parker",
+  "title": "The Man Who Owned The King",
+  "channel": "The King Lives",
+  "niche": "elvis",
+  "format": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "aspect": "16:9"
+  },
+  "audio": {
+    "narration_script": "script.txt",
+    "tts_provider": "edge",
+    "voice": "en-US-GuyNeural",
+    "rate": "-10%",
+    "music_volume_under_speech": 0.1,
+    "music_volume_in_gaps": 0.22
+  },
+  "music": {
+    "crossfade": 3.0,
+    "cues": [
+      {
+        "file": "../../.verticals-src/music/cue1_cold_journey.mp3",
+        "from_scene": 1,
+        "to_scene": 7,
+        "gain": 1.0,
+        "mood": "cold, sparse, withholding",
+        "why": "measured 789Hz / 260 busy - dark and sustained, sits under narration. Covers Breda 1927 through the 1956 contract."
+      },
+      {
+        "file": "../../.verticals-src/music/cue2_fake_it.mp3",
+        "from_scene": 8,
+        "to_scene": 13,
+        "gain": 0.95,
+        "mood": "restless, mounting pressure",
+        "why": "685Hz / 428 busy - more forward motion for Hollywood, the casino and the Vegas grind, without the 693-busy clash of alt_gambling."
+      },
+      {
+        "file": "../../.verticals-src/music/cue3_requiem.mp3",
+        "from_scene": 14,
+        "to_scene": 18,
+        "gain": 1.0,
+        "mood": "elegiac, cold, final",
+        "why": "570Hz / 102 busy / -25dB - the darkest, quietest, most sustained track measured. Carries the death, the diminishment and the legacy."
+      }
+    ]
+  },
+  "transitions": {
+    "type": "fade",
+    "duration": 0.9,
+    "note": "xfade between every scene; duration is subtracted from the outgoing scene so total runtime still matches narration"
+  },
+  "text_overlay": {
+    "enabled": false,
+    "font_size": 54,
+    "font_color": "white",
+    "box_color": "black@0.55",
+    "position": "bottom_third",
+    "fade_in": 0.6,
+    "hold": 4.5,
+    "fade_out": 0.6,
+    "start_offset": 1.5,
+    "margin_from_bottom_pct": 0.22,
+    "note": "disabled - boxed title cards collided with the running captions"
+  },
+  "pronunciation_fixes": [
+    {
+      "from": "van Kuijk",
+      "to": "van Koyk"
+    },
+    {
+      "from": "Kuijk",
+      "to": "Koyk"
+    },
+    {
+      "from": "Breda",
+      "to": "Bray-dah"
+    },
+    {
+      "from": "Andreas Cornelis",
+      "to": "An-dray-as Cor-nay-lis"
+    },
+    {
+      "from": "Tupelo",
+      "to": "Too-puh-lo"
+    }
+  ],
+  "scenes": [
+    {
+      "n": 1,
+      "image": "scenes/scene_01.jpg",
+      "era": "situation",
+      "ken_burns": "hold",
+      "weight": 47.0,
+      "beat": "situation",
+      "overlay": "HIS NAME WAS NOT TOM PARKER."
+    },
+    {
+      "n": 2,
+      "image": "scenes/v2/new_steerage.jpg",
+      "era": "situation",
+      "ken_burns": "hold",
+      "weight": 47.0,
+      "beat": "situation"
+    },
+    {
+      "n": 3,
+      "image": "scenes/v2/new_armyform.jpg",
+      "era": "situation",
+      "ken_burns": "hold",
+      "weight": 47.0,
+      "beat": "situation",
+      "overlay": "HE TOOK ANOTHER MAN'S NAME."
+    },
+    {
+      "n": 4,
+      "image": "scenes/scene_02.jpg",
+      "era": "situation",
+      "ken_burns": "hold",
+      "weight": 47.0,
+      "beat": "situation",
+      "overlay": "HE ENTERED AMERICA ILLEGALLY."
+    },
+    {
+      "n": 5,
+      "image": "scenes/v2/new_kitchen.jpg",
+      "era": "situation",
+      "ken_burns": "hold",
+      "weight": 47.0,
+      "beat": "situation"
+    },
+    {
+      "n": 6,
+      "image": "scenes/v2/new_memphis1955.jpg",
+      "era": "desire",
+      "ken_burns": "hold",
+      "weight": 110.5,
+      "beat": "desire",
+      "overlay": "1955. MEMPHIS. THE FIRST MEETING."
+    },
+    {
+      "n": 7,
+      "image": "scenes/scene_04.jpg",
+      "era": "desire",
+      "ken_burns": "hold",
+      "weight": 110.5,
+      "beat": "desire",
+      "overlay": "50% OF EVERYTHING ELVIS EARNED."
+    },
+    {
+      "n": 8,
+      "image": "scenes/v2/new_emptystage.jpg",
+      "era": "conflict",
+      "ken_burns": "hold",
+      "weight": 74.7,
+      "beat": "conflict",
+      "overlay": "THE WORLD NEVER SAW HIM."
+    },
+    {
+      "n": 9,
+      "image": "scenes/v2/new_refusedoffers.jpg",
+      "era": "conflict",
+      "ken_burns": "hold",
+      "weight": 74.7,
+      "beat": "conflict"
+    },
+    {
+      "n": 10,
+      "image": "scenes/scene_05.jpg",
+      "era": "conflict",
+      "ken_burns": "hold",
+      "weight": 74.7,
+      "beat": "conflict",
+      "overlay": "SEVEN YEARS. NO STAGE. BAD MOVIES."
+    },
+    {
+      "n": 11,
+      "image": "scenes/scene_06.jpg",
+      "era": "conflict",
+      "ken_burns": "hold",
+      "weight": 74.7,
+      "beat": "conflict",
+      "overlay": "$30 MILLION IN GAMBLING DEBTS."
+    },
+    {
+      "n": 12,
+      "image": "scenes/scene_07.jpg",
+      "era": "conflict",
+      "ken_burns": "hold",
+      "weight": 74.7,
+      "beat": "conflict",
+      "overlay": "600 SHOWS. 8 YEARS. NO WAY OUT."
+    },
+    {
+      "n": 13,
+      "image": "scenes/v2/new_showroom.jpg",
+      "era": "conflict",
+      "ken_burns": "hold",
+      "weight": 74.7,
+      "beat": "conflict"
+    },
+    {
+      "n": 14,
+      "image": "scenes/v2/new_confrontation.jpg",
+      "era": "change",
+      "ken_burns": "hold",
+      "weight": 75.3,
+      "beat": "change",
+      "overlay": "HE TRIED TO FIRE HIM."
+    },
+    {
+      "n": 15,
+      "image": "scenes/v2/new_graceland.jpg",
+      "era": "change",
+      "ken_burns": "hold",
+      "weight": 75.3,
+      "beat": "change",
+      "overlay": "AUGUST 16, 1977."
+    },
+    {
+      "n": 16,
+      "image": "scenes/scene_08.jpg",
+      "era": "change",
+      "ken_burns": "hold",
+      "weight": 75.3,
+      "beat": "change",
+      "overlay": "HE FLEW TO MEMPHIS HOURS LATER. NOT TO GRIEVE."
+    },
+    {
+      "n": 17,
+      "image": "scenes/scene_09.jpg",
+      "era": "result",
+      "ken_burns": "hold",
+      "weight": 130.0,
+      "beat": "result",
+      "overlay": "$1 MILLION. AFTER $100 MILLION EARNED."
+    },
+    {
+      "n": 18,
+      "image": "scenes/scene_10.jpg",
+      "era": "result",
+      "ken_burns": "hold",
+      "weight": 130.0,
+      "beat": "result",
+      "overlay": "THE KING WENT EVERYWHERE. THE MAN WHO OWNED HIM NEVER LEFT."
+    }
+  ],
+  "captions": {
+    "enabled": true,
+    "words_per_line": 5,
+    "font_size": 42,
+    "primary_colour": "&H00FFFFFF",
+    "highlight_colour": "&H0027A9C9",
+    "outline_colour": "&H00000000",
+    "margin_v": 110,
+    "note": "highlight_colour is #C9A227 gold from elvis.yaml, in ASS BGR order"
+  }
+}
