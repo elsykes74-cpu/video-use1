@@ -1,0 +1,35 @@
+{
+  "job_id": "how_elvis_presley_saved_his_career",
+  "title": "How Elvis Presley Saved His Career",
+  "channel": "The King Lives",
+  "niche": "elvis",
+  "format": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "aspect": "16:9"
+  },
+  "audio": {
+    "source": "C:/Users/erick/Downloads/How_Elvis_Presley_saved_his_career.m4a",
+    "narration_script": "script.txt",
+    "music_volume_under_speech": 0.08,
+    "music_volume_in_gaps": 0.18
+  },
+  "music": {
+    "crossfade": 2.0,
+    "cues": []
+  },
+  "transitions": {
+    "duration": 0.7
+  },
+  "text_overlay": {
+    "enabled": false
+  },
+  "captions": {
+    "enabled": true,
+    "words_per_line": 5,
+    "font_size": 42
+  },
+  "pronunciation_fixes": [],
+  "scenes": []
+}
