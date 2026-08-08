@@ -31,5 +31,722 @@
     "font_size": 42
   },
   "pronunciation_fixes": [],
-  "scenes": []
+  "scenes": [
+    {
+      "n": 1,
+      "image": "scenes/scene_001.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "An American city street in summer 1968 at dusk: flags at half-mast on government buildings, a makeshift flower memorial at the base of a stone monument, pedestrians moving slowly and quietly, the particular heavy atmosphere of a nation that has absorbed too much grief in too short a time"
+    },
+    {
+      "n": 2,
+      "image": "scenes/scene_002.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A stack of newspapers from summer 1968 on a kitchen table: front-page headlines about assassinations and riots, the typography and halftone photographs of the era, the dates visible on mastheads, tragedy accumulated into a single physical stack of newsprint"
+    },
+    {
+      "n": 3,
+      "image": "scenes/scene_003.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "A large outdoor rock festival stage in 1968: a left-handed guitarist with a massive afro in the center of the stage, flames erupting from the front of the stage, the crowd stretching to the horizon, the sheer scale of a cultural moment made physical"
+    },
+    {
+      "n": 4,
+      "image": "scenes/scene_004.jpg",
+      "ken_burns": "hold",
+      "weight": 30,
+      "prompt": "Four young British men in late-1960s mod fashion performing on a large television stage: long hair, collarless jackets, the visual language of a music culture that has completely replaced what existed five years before it"
+    },
+    {
+      "n": 5,
+      "image": "scenes/scene_005.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A Hollywood film studio soundstage circa 1967: arc lights above, a painted tropical beach backdrop on the cyclorama, a dark-haired man in a bright Hawaiian print shirt holding a small dog, extras in swimsuits arranged in a semicircle, the manufactured cheerfulness of a production existing entirely outside of reality",
+      "refs": ["../../reference_library/elvis/1966_hollywood/"]
+    },
+    {
+      "n": 6,
+      "image": "scenes/scene_006.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A wall of identical movie posters in a film distributor's office: the same dark-haired face in different colorful settings — a helicopter, a motorboat, a racetrack, a Hawaiian beach — the formula visible across all of them, the same smile in different costumes"
+    },
+    {
+      "n": 7,
+      "image": "scenes/scene_007.jpg",
+      "ken_burns": "hold",
+      "weight": 30,
+      "prompt": "A music critic at a typewriter in a small office, 1968: a film soundtrack album jacket propped on the shelf behind him, his expression as he reads back what he has typed suggesting he is being more generous than the work deserves"
+    },
+    {
+      "n": 8,
+      "image": "scenes/scene_008.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "A record store in 1968: the new releases rack displaying Aretha Franklin, the Rolling Stones, and Jimi Hendrix prominently, a film soundtrack album by a dark-haired performer filed in a secondary section behind the current releases, the physical geography of cultural relevance"
+    },
+    {
+      "n": 9,
+      "image": "scenes/scene_009.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "An empty concert stage in a large arena, 1968: the lights dimmed to work level, the seats completely empty, the stage bare — the absence of a performer who has not played a live concert in seven years made physical by the emptiness of the room"
+    },
+    {
+      "n": 10,
+      "image": "scenes/scene_010.jpg",
+      "ken_burns": "hold",
+      "weight": 30,
+      "prompt": "A transistor radio on a kitchen table in 1968: a teenage girl visible in the next room, the radio playing something vital and new, the gap between what the radio is playing and the world of five years ago implied entirely by her expression and the music posters on her wall"
+    },
+    {
+      "n": 11,
+      "image": "scenes/scene_011.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "NBC Television Studios exterior in Burbank, California, 1968: the institutional beige buildings, the studio complex parking lot, a production call board visible through glass lobby doors, the ordinary exteriors of a facility where something extraordinary is being planned"
+    },
+    {
+      "n": 12,
+      "image": "scenes/scene_012.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A production meeting in a television network office: a young man in his late twenties with close-cropped hair and sharp eyes seated across a conference table from a heavyset older man in a fedora, both looking at a production schedule, the fundamental incompatibility of their two visions visible in their body language"
+    },
+    {
+      "n": 13,
+      "image": "scenes/scene_013.jpg",
+      "ken_burns": "hold",
+      "weight": 30,
+      "prompt": "A young television director's office: photographs and storyboards pinned to a corkboard, a production calendar marked with red pen, the workspace of someone building something carefully, the visual evidence of a plan not yet revealed"
+    },
+    {
+      "n": 14,
+      "image": "scenes/scene_014.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "An entourage moving through a hotel corridor: a group of large men in dark suits creating a moving wall, a dark-haired performer at the center invisible behind the bodies, the physical architecture of isolation built around a famous person who has been told the world outside is dangerous"
+    },
+    {
+      "n": 15,
+      "image": "scenes/scene_015.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A management contract on a lawyer's desk, circa 1956: the signature lines filled in at the bottom of many pages of terms, a hand resting on top of it — the document that built a career and constructed a cage simultaneously, the two things indistinguishable from each other"
+    },
+    {
+      "n": 16,
+      "image": "scenes/scene_016.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "The lobby of an entertainment building on Sunset Boulevard, 1968: a young director gesturing toward the front glass doors, a dark-haired man in his early thirties looking at the doors with the expression of someone who has been told the world outside those doors is genuinely dangerous"
+    },
+    {
+      "n": 17,
+      "image": "scenes/scene_017.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "Sunset Boulevard at five o'clock on a summer afternoon: dense rush-hour traffic, pedestrians filling both sidewalks, neon signs beginning to compete with the daylight, the Strip at its busiest — completely ordinary, utterly indifferent to whoever is standing on the sidewalk"
+    },
+    {
+      "n": 18,
+      "image": "scenes/scene_018.jpg",
+      "ken_burns": "hold",
+      "weight": 42,
+      "prompt": "Two men standing on a busy Los Angeles sidewalk in 1968: a dark-haired man in his early thirties and a shorter younger man beside him, both of them looking entirely ordinary, cars streaming past, pedestrians walking by, nobody stopping or looking twice"
+    },
+    {
+      "n": 19,
+      "image": "scenes/scene_019.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "Two young men with long hair in late-1960s clothing walking down a Sunset Strip sidewalk, one of them bumping slightly into a person walking the other direction, neither of them stopping or looking up to see who they hit — the collision completely unremarkable"
+    },
+    {
+      "n": 20,
+      "image": "scenes/scene_020.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A dark-haired man of thirty-three standing on a city sidewalk: his posture visibly changing as the seconds pass, his shoulders dropping, something releasing from his face — the physical expression of a fear dissolving in real time, the moment when a held breath finally lets go"
+    },
+    {
+      "n": 21,
+      "image": "scenes/scene_021.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A building lobby interior moments after two men have walked back inside from the street: the dark-haired man laughing at something the younger man said, his posture completely transformed from five minutes ago, loose and easy now, the energy in the room different than when they left"
+    },
+    {
+      "n": 22,
+      "image": "scenes/scene_022.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "A corporate organizational chart on a whiteboard in a management office: boxes connected by lines of authority, one box at the top with connections running down to everything below it, the visual grammar of a structure built for control rather than creativity"
+    },
+    {
+      "n": 23,
+      "image": "scenes/scene_023.jpg",
+      "ken_burns": "hold",
+      "weight": 30,
+      "prompt": "A telephone on a desk in a manager's office: the receiver lying beside the cradle as if a conversation just ended, a notepad with handwritten instructions face down beside it, the implements of control arranged as objects on a desk"
+    },
+    {
+      "n": 24,
+      "image": "scenes/scene_024.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A carnival midway at night in the late 1940s: a heavyset man at a game booth with a cigar and a practiced salesman's patter, colored lights overhead, the crowd moving past, the world that made a certain kind of manager exactly what he became"
+    },
+    {
+      "n": 25,
+      "image": "scenes/scene_025.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A manager's desk covered with contracts, promotional materials, and tour schedules: a hand holding a red pen making a mark through an item on a list, the administration of a career as physical paperwork, the performance reduced to columns of dates and dollar amounts"
+    },
+    {
+      "n": 26,
+      "image": "scenes/scene_026.jpg",
+      "ken_burns": "hold",
+      "weight": 42,
+      "prompt": "A dark-haired performer alone in a dressing room after the walk on Sunset: seated in a canvas chair, his elbows on his knees, looking at the floor — someone working through what just happened, the private moment before an internal shift becomes a decision"
+    },
+    {
+      "n": 27,
+      "image": "scenes/scene_027.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "The Sunset Strip at night: neon signs of clubs and restaurants and showrooms, the sidewalks busy with the counterculture of 1968, the world that has moved completely on from 1956, the street that proved it by failing to notice the most famous person in the world standing on it"
+    },
+    {
+      "n": 28,
+      "image": "scenes/scene_028.jpg",
+      "ken_burns": "hold",
+      "weight": 30,
+      "prompt": "A television production office window looking down at the Sunset Strip below: from three stories up, two small figures visible on the sidewalk, the scale of ordinary street life surrounding them, the experiment visible from a different angle entirely"
+    },
+    {
+      "n": 29,
+      "image": "scenes/scene_029.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A heavily decorated executive office in a Hollywood talent agency: framed gold records on the walls, a massive desk with nothing on it, two men in matching dark suits standing by the door with their arms crossed, the physical grammar of institutional power arranged to intimidate"
+    },
+    {
+      "n": 30,
+      "image": "scenes/scene_030.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "A narrow backstage corridor in a television production facility: several people standing in line outside a door that is smaller than a standard office door, the incongruity of a significant meeting taking place behind such a small and cramped door"
+    },
+    {
+      "n": 31,
+      "image": "scenes/scene_031.jpg",
+      "ken_burns": "hold",
+      "weight": 30,
+      "prompt": "Two men in dark suits standing on either side of a small utility door with their arms crossed: the visual language of intimidation translated into the absurd setting of what is essentially a broom closet, the theatricality of the setup completely deliberate"
+    },
+    {
+      "n": 32,
+      "image": "scenes/scene_032.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "The interior of a very small room converted into a makeshift office: a folding table, two chairs pressed against each other, a telephone on the table, three people barely fitting, the claustrophobia designed into the space — a calculated environment for a calculated conversation"
+    },
+    {
+      "n": 33,
+      "image": "scenes/scene_033.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A heavyset man in a suit and fedora making a declarative gesture across a small folding table: his posture projecting absolute certainty, his expression showing a man who has not seriously entertained the possibility that he might not get exactly what he wants"
+    },
+    {
+      "n": 34,
+      "image": "scenes/scene_034.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A dark-haired man of thirty-three seated across a small table from a larger older man: the younger man's posture respectful, his eyes slightly downcast, his body language saying yes sir while something behind his eyes is doing something else entirely"
+    },
+    {
+      "n": 35,
+      "image": "scenes/scene_035.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A hallway outside a small door: two men stepping back out into the corridor, the door closing behind them, one turning to say something very quietly to the other — the whisper that will determine what the television special actually becomes"
+    },
+    {
+      "n": 36,
+      "image": "scenes/scene_036.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A dark-haired man leaning close to a shorter younger man in a corridor, his face animated and intent: a quiet urgent whisper, one hand jabbing the other man in the ribs, the conspiratorial energy of two people who have just made a decision that the man in the closed room behind them doesn't know about yet"
+    },
+    {
+      "n": 37,
+      "image": "scenes/scene_037.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "A network television Christmas special promotional card: generic holiday imagery, painted snow, a fireplace, the safe and inoffensive aesthetic of television entertainment designed to offend absolutely no one — what the special almost became"
+    },
+    {
+      "n": 38,
+      "image": "scenes/scene_038.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "Sheet music manuscript paper on a piano bench: the opening bars of a song handwritten in pencil, chord symbols above the staff, the composition visible as marks on paper before it became one of the most powerful television performances of the decade"
+    },
+    {
+      "n": 39,
+      "image": "scenes/scene_039.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A recording studio control room: a producer with headphones around his neck listening to a playback, his expression moving from professional assessment to genuine surprise — the moment of hearing what a song actually is rather than what it was supposed to be"
+    },
+    {
+      "n": 40,
+      "image": "scenes/scene_040.jpg",
+      "ken_burns": "hold",
+      "weight": 30,
+      "prompt": "A television production calendar pinned to a wall: December 3, 1968 circled in red at the far right, weeks of preparation marked in the dates leading up to it, the deadline visible as a point approaching that will end the ability of certain people to interfere"
+    },
+    {
+      "n": 41,
+      "image": "scenes/scene_041.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "NBC Studio 4 in Burbank being prepared for a television taping: a small square stage — perhaps fifteen feet on a side — at the center of the room, folding chairs arranged in a circle around it, camera positions marked with tape on the floor, the intimate scale of the setup startling given the stakes"
+    },
+    {
+      "n": 42,
+      "image": "scenes/scene_042.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "A costume design sketch on a drafting table: a full-length suit rendered in black with a high Napoleonic collar, the designer's handwritten notes in the margins, a swatch of black leather pinned to the corner of the paper — the garment before it became iconic"
+    },
+    {
+      "n": 43,
+      "image": "scenes/scene_043.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "An all-black leather suit on a hanger in a dressing room: the material catching the studio light, the collar structured and precise, the wardrobe crew standing at a respectful distance studying it with the focused attention of people who understand exactly how much is riding on this garment"
+    },
+    {
+      "n": 44,
+      "image": "scenes/scene_044.jpg",
+      "ken_burns": "hold",
+      "weight": 30,
+      "prompt": "A backstage corridor at a television production facility during a taping: dressing room doors, thick electrical cables on the floor, a costume on a rolling rack, the working infrastructure of a large production that the audience will never see"
+    },
+    {
+      "n": 45,
+      "image": "scenes/scene_045.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A young director crouched at the edge of a television studio, speaking very quietly to two camera operators: pointing at the small square stage in the center of the room, his gestures communicating clearly — stay back, follow the energy, do not interrupt whatever is about to happen"
+    },
+    {
+      "n": 46,
+      "image": "scenes/scene_046.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "Ordinary people being directed across a studio parking lot and into a building in 1968: people in casual late-1960s clothes, some carrying takeout bags, their expressions a mixture of confusion and delight, an audience gathered without knowing quite what they are about to see"
+    },
+    {
+      "n": 47,
+      "image": "scenes/scene_047.jpg",
+      "ken_burns": "hold",
+      "weight": 42,
+      "prompt": "A dark-haired man of thirty-three standing alone in a backstage corridor in a black leather suit: his hands not entirely still, his weight shifting slightly from foot to foot, his face showing the very specific fear of someone who has been away from something for a long time and is not entirely sure they still know how to do it",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 48,
+      "image": "scenes/scene_048.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A dark-haired man in a black leather suit turning to the young director beside him in a backstage corridor: his expression asking a genuine question, the vulnerability completely real — what if I've lost it, what if this doesn't work, two men standing together before something irreversible",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 49,
+      "image": "scenes/scene_049.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A small square performance stage from the audience's perspective: folding chairs arranged in a tight circle around it, a microphone stand at the center, studio lights above creating a warm isolated pool of light on the floor, the arena-like intimacy of a very small space"
+    },
+    {
+      "n": 50,
+      "image": "scenes/scene_050.jpg",
+      "ken_burns": "hold",
+      "weight": 42,
+      "prompt": "The first moment: a dark-haired man in a black leather suit stepping from a backstage corridor into the studio lights, his silhouette filling the doorframe before his face is visible, the audience in their folding chairs leaning forward almost in unison",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 51,
+      "image": "scenes/scene_051.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "Audience members in folding chairs at the moment of first recognition: expressions moving through bewilderment, then recognition, then something that has no name — a collective physical response to something real happening three feet in front of them"
+    },
+    {
+      "n": 52,
+      "image": "scenes/scene_052.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A man in a black leather suit sitting in a folding chair with a guitar across his knee: completely still for one moment before the music starts, his eyes finding something in the middle distance, the last half-second before everything changes",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 53,
+      "image": "scenes/scene_053.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A thin man with dark slicked-back hair playing a hollow-body electric guitar in a folding chair: his eyes on the dark-haired man sitting across the small stage, fourteen years of musical partnership resuming in a single exchange of glances"
+    },
+    {
+      "n": 54,
+      "image": "scenes/scene_054.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A guitar case being used as a percussion instrument: a man seated at the edge of the small stage, two drumsticks in his hands, the hollow thud of wood on a hard case as the only percussion in the room — the primal stripped-down backbeat that leaves all the space to the voice"
+    },
+    {
+      "n": 55,
+      "image": "scenes/scene_055.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "The small stage from above: three musicians in a circle of folding chairs, a tight ring of audience members surrounding them so closely they could reach out and touch, the absence of production infrastructure making what is happening look almost accidental"
+    },
+    {
+      "n": 56,
+      "image": "scenes/scene_056.jpg",
+      "ken_burns": "hold",
+      "weight": 42,
+      "prompt": "A performer mid-song on a small stage: his posture visibly loosening as the song progresses, something releasing from his shoulders and face, the fear leaving his body in real time — the visual record of someone discovering in front of an audience that they can still do this",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 57,
+      "image": "scenes/scene_057.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "Sweat visible on a performer's face under hot studio lights: the shine on his forehead and jaw, the black leather suit holding the heat, the physical evidence of effort — the proof that this is not manufactured, the specific thing a television critic will later complain about without understanding why it matters",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 58,
+      "image": "scenes/scene_058.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A man laughing at his own mistake during a live performance: missed a chord, it doesn't matter, his laughter completely genuine and unguarded, the audience laughing with him — the informality itself being the performance, the gap between the polished product and the human being closed entirely"
+    },
+    {
+      "n": 59,
+      "image": "scenes/scene_059.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A man handing his hollow-body guitar to another man in a folding chair: the logistics of exchanging instruments in a small stage with no strap available, both men working out how to manage the transfer, the absurdity completely comfortable"
+    },
+    {
+      "n": 60,
+      "image": "scenes/scene_060.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A performer driving a rhythm on an acoustic guitar he borrowed thirty seconds ago: his right hand hard on the strings, his body beginning to move the way it moved in 1955 when the music was new, the old electricity back in his hands",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 61,
+      "image": "scenes/scene_061.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A woman in the studio audience watching the performance: about forty years old, her hands in her lap, her face showing the particular kind of recognition that comes from seeing something you had forgotten existed — the expression of someone who did not expect to feel this"
+    },
+    {
+      "n": 62,
+      "image": "scenes/scene_062.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A wardrobe team backstage between the six o'clock and eight o'clock tapings: two people bent over a black leather suit with handheld hair dryers, having washed it by hand between sessions, the frantic practical work of a show that is going right"
+    },
+    {
+      "n": 63,
+      "image": "scenes/scene_063.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A choreographed production number on a full proscenium television stage: an elaborate set piece with large backlit signage, a full orchestra in the pit, a man in a white suit center stage — the produced segments of the special, the visible difference between this and the folding chairs",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 64,
+      "image": "scenes/scene_064.jpg",
+      "ken_burns": "hold",
+      "weight": 42,
+      "prompt": "A performer in a white suit at a single television camera singing with ferocity that borders on desperation: his hands clenched, tears visible on his face, delivering the closing number of the broadcast — a song about peace and understanding that a powerful man in a fedora never wanted anyone to see",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 65,
+      "image": "scenes/scene_065.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A television production control room during a live broadcast: a wall of monitors showing the same image at different angles, a director calling shots, a producer standing behind with his hand over his mouth watching a performer deliver exactly what he hoped for and was afraid to count on"
+    },
+    {
+      "n": 66,
+      "image": "scenes/scene_066.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "Television sets in living rooms across America on the evening of December 3, 1968: the same image — a man in a black leather suit in a folding chair — glowing on screens in a thousand different domestic settings, every family in their own world watching the same thing"
+    },
+    {
+      "n": 67,
+      "image": "scenes/scene_067.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A television critic at a typewriter late the night of December 3, 1968: a notebook covered in handwriting beside the machine, a glass of water going warm, writing a review that will have to account for the fact that a ten-year comeback gap just ended on a Tuesday night in prime time"
+    },
+    {
+      "n": 68,
+      "image": "scenes/scene_068.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A stack of morning newspaper entertainment sections the day after the broadcast: headlines about the special, the word comeback appearing in several of them, the consensus forming in real time on newsprint, the critical rehabilitation visible as a physical stack of paper"
+    },
+    {
+      "n": 69,
+      "image": "scenes/scene_069.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "The American Sound Studio building on Thomas Street in Memphis: a brick storefront in an ordinary commercial strip, a hand-lettered sign above the door, a restaurant sharing the wall on one side, the building completely at odds with the music produced inside it"
+    },
+    {
+      "n": 70,
+      "image": "scenes/scene_070.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "The interior of American Sound Studio tracking room: mismatched chairs, music stands, instrument cables across the floor, an upright piano in the corner, the organized disorder of a room whose purpose is to make music rather than to look like a place that makes music"
+    },
+    {
+      "n": 71,
+      "image": "scenes/scene_071.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A producer in his late thirties behind a mixing console in a small control room: direct-looking, leaning back in his chair with complete authority, a man with strong opinions about how records get made and the professional confidence to hold that position against anyone"
+    },
+    {
+      "n": 72,
+      "image": "scenes/scene_072.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "Six session musicians setting up in a small studio space: a Telecaster player checking his tuning, a bassist plugging in, a drummer adjusting his seat behind a minimal kit, two keyboard players running a quick scale — the quiet professional routine of people who have played on records you know and could not name"
+    },
+    {
+      "n": 73,
+      "image": "scenes/scene_073.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A dark-haired man of thirty-three arriving at a studio building in a commercial strip mall with his entourage behind him: taking in the modest exterior, a restaurant smell coming through the shared wall, his expression somewhere between skepticism and relief at finding something this unglamorous",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 74,
+      "image": "scenes/scene_074.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A cigar being produced in a recording studio and every man in the entourage suddenly holding a lighter: three or four men competing to be first, their lighters out in under a second, the session musicians watching from behind their instruments with expressions of professional bewilderment"
+    },
+    {
+      "n": 75,
+      "image": "scenes/scene_075.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A dark-haired man sitting down at an upright piano in a recording studio: the small risk taken in public, the act of choosing to work rather than to be served, the gesture of someone who has decided to be a musician in a room full of musicians",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 76,
+      "image": "scenes/scene_076.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A performer's hands on a piano keyboard: the weight of the whole hand pressing down on a blues chord, the left hand establishing a driving downbeat rhythm, the technique completely self-taught and completely committed — injecting swagger into a song that was written to be polite"
+    },
+    {
+      "n": 77,
+      "image": "scenes/scene_077.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A producer leaning forward against the control room glass watching a performer at the piano: not reaching for the intercom, not stopping it, just watching with his hand very still on the board — the recognition that interrupting this particular moment would be a mistake"
+    },
+    {
+      "n": 78,
+      "image": "scenes/scene_078.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A session musician in his chair between takes: his instrument resting across his knee, watching the man at the piano with an expression that has shifted from professional detachment to actual attention — the moment when you stop watching a celebrity and start watching a musician"
+    },
+    {
+      "n": 79,
+      "image": "scenes/scene_079.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "The tracking room during a live take with all musicians in the same room: no isolation booths, everyone in the open space together, the physical evidence of people listening to each other while they play — the live acoustic that makes a record feel like it happened somewhere real"
+    },
+    {
+      "n": 80,
+      "image": "scenes/scene_080.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A recording studio control room at three in the morning: a producer's coffee cup beside the console, the meters still moving, the amber light of late-night work, a glass partition between the control room and the tracking room where someone is still working at the piano"
+    },
+    {
+      "n": 81,
+      "image": "scenes/scene_081.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "An argument in a recording studio: two men in suits pressing toward a producer at his console, their posture aggressive and demanding, the producer's body language completely immovable, his hand pointing firmly toward the door"
+    },
+    {
+      "n": 82,
+      "image": "scenes/scene_082.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A dark-haired man stepping between two arguing groups in a recording studio: one hand raised, his posture calm and decisive — a man using the authority he actually has to serve the music rather than the people around him who are trying to interrupt it",
+      "refs": ["../../reference_library/elvis/1968_comeback/"]
+    },
+    {
+      "n": 83,
+      "image": "scenes/scene_083.jpg",
+      "ken_burns": "hold",
+      "weight": 42,
+      "prompt": "The American Sound Studio control room at the end of a session: the producer and the musicians standing and sitting around the console listening to a playback, the room completely quiet, everyone understanding they have just heard something that will outlast the session that produced it"
+    },
+    {
+      "n": 84,
+      "image": "scenes/scene_084.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "A 45rpm record coming off a pressing plant machine: the vinyl warm and bright, the label showing a Memphis address, the physical object that will carry a comeback out into the world one jukebox and one radio station at a time"
+    },
+    {
+      "n": 85,
+      "image": "scenes/scene_085.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A radio DJ in 1969 sliding a new record onto his turntable: his headphones on one ear, his expression moving from professional neutral to genuine attention as the needle drops — the track catching him completely off guard"
+    },
+    {
+      "n": 86,
+      "image": "scenes/scene_086.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A listener in a car stopped at a red light in 1969: both hands on the wheel, the radio playing something from the dashboard, the light has changed to green but he hasn't moved — he is listening to something that requires him to stay still"
+    },
+    {
+      "n": 87,
+      "image": "scenes/scene_087.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "A record store in 1969 with a new Memphis album prominently displayed in the window: the store manager positioning the record face-out in the front display, the physical evidence of a critical rehabilitation — a comeback validated as a commercial object in a shop window"
+    },
+    {
+      "n": 88,
+      "image": "scenes/scene_088.jpg",
+      "ken_burns": "hold",
+      "weight": 32,
+      "prompt": "A music trade chart from 1969: a listing at number one with a dark-haired man's name beside it, the chart position circled in red, the comeback validated in the only language the industry fully speaks — a number next to a name at the top of a printed list"
+    },
+    {
+      "n": 89,
+      "image": "scenes/scene_089.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "An executive suite in a Las Vegas hotel: a signed contract face-up on a large desk, a heavyset man in a fedora on one side, a younger man in a suit on the other, the deal being made that will organize and eventually consume the next decade of a life"
+    },
+    {
+      "n": 90,
+      "image": "scenes/scene_090.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "The International Hotel Las Vegas showroom before opening night, 1969: the enormous stage fully lit, two thousand empty seats stretching back in the dark, the production infrastructure of lighting rigs and orchestra pit visible, the scale of everything as far from a small square stage surrounded by folding chairs as it is possible to get"
+    },
+    {
+      "n": 91,
+      "image": "scenes/scene_091.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A jeweled jumpsuit on a dressing room hanger: rhinestones and elaborate embroidery under fluorescent lights, the collar high and structured, the garment growing more elaborate with each season — the outside expanding as the inside is being managed differently",
+      "refs": ["../../reference_library/elvis/1969_vegas/"]
+    },
+    {
+      "n": 92,
+      "image": "scenes/scene_092.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A Las Vegas showroom audience in 1971: well-dressed patrons at round tables with drinks on white tablecloths, a performer on an enormous stage above them, the physical distance between the performer and the people watching measured in feet that did not exist in a circle of folding chairs"
+    },
+    {
+      "n": 93,
+      "image": "scenes/scene_093.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A tour schedule on a desk: columns of dates stretching across many months, two shows nightly printed beside each city, the document that organizes an exhausting relentless life into a grid of obligations with no gaps and no breathing room"
+    },
+    {
+      "n": 94,
+      "image": "scenes/scene_094.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A medicine cabinet in a large residence: prescription bottles arranged in a row, labeled packets stacked beside them, the pharmaceutical architecture of a body that can no longer regulate itself through natural means — the accumulation of prescriptions visible as a collection of orange bottles"
+    },
+    {
+      "n": 95,
+      "image": "scenes/scene_095.jpg",
+      "ken_burns": "hold",
+      "weight": 38,
+      "prompt": "A dark-haired man in his late thirties in a Las Vegas dressing room between shows: stage makeup bright under fluorescent lights, a glass of water in his hand, the exhaustion that lives underneath the costume visible in the way he is holding his own weight",
+      "refs": ["../../reference_library/elvis/1974_vegas/"]
+    },
+    {
+      "n": 96,
+      "image": "scenes/scene_096.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A large ornate bedroom in the afternoon with the curtains drawn: a figure asleep under heavy blankets in the midday dark, the particular disorientation of someone whose internal schedule has been organized entirely around other people's needs for so long that the body has lost its own rhythm"
+    },
+    {
+      "n": 97,
+      "image": "scenes/scene_097.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "A performer on a Las Vegas stage in the mid-1970s: the jumpsuit more elaborate, the silhouette heavier, the charisma still present but working harder now — the effort visible in a way it was not in a folding chair, the gap between what the performance costs and what it pays growing wider",
+      "refs": ["../../reference_library/elvis/1974_vegas/"]
+    },
+    {
+      "n": 98,
+      "image": "scenes/scene_098.jpg",
+      "ken_burns": "hold",
+      "weight": 35,
+      "prompt": "A large television set in an opulent room with a bullet hole through the center of the screen: the tube shattered, the room around it grand and expensive, the act of destroying the television the act of someone whose relationship with ordinary reality has become very complicated"
+    },
+    {
+      "n": 99,
+      "image": "scenes/scene_099.jpg",
+      "ken_burns": "hold",
+      "weight": 40,
+      "prompt": "The Graceland estate seen from outside its iron gates on an August afternoon: the white colonial columns visible at the end of the circular drive, the grounds quiet in the Memphis heat, the gates closed, the house holding something that cannot be named from the outside"
+    },
+    {
+      "n": 100,
+      "image": "scenes/scene_100.jpg",
+      "ken_burns": "hold",
+      "weight": 42,
+      "prompt": "A guitar in a museum display case: worn finish, pick marks on the body, a small placard beside it explaining what it is and where it was played, lit from above in a glass case — the instrument that proved something in a small room in 1968, preserved now, behind glass"
+    }
+  ]
 }
