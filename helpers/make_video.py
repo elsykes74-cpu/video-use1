@@ -80,8 +80,81 @@ def newer(a: Path, b: Path) -> bool:
 # stages
 # ──────────────────────────────────────────────────────────
 
+def _resolve_source(proj: Path, source_raw: str) -> Path:
+    p = Path(source_raw)
+    return p if p.is_absolute() else (proj / p).resolve()
+
+
+def _transcribe_to_script(source: Path, script: Path,
+                           bounds_path: Path, model_size: str = "small") -> bool:
+    """Transcribe source audio → script.txt + voice_boundaries.json.
+
+    Uses faster-whisper with word timestamps.  The boundaries file is in the
+    same format as Edge TTS word boundaries so the rest of the caption pipeline
+    needs no changes.
+    """
+    try:
+        from faster_whisper import WhisperModel
+    except ImportError:
+        log("  ERROR: faster-whisper not available after install attempt")
+        return False
+
+    log(f"  loading faster-whisper '{model_size}' "
+        f"(first run downloads the model — this may take a minute)...")
+    model = WhisperModel(model_size, device="auto", compute_type="int8")
+    segments, info = model.transcribe(
+        str(source), word_timestamps=True, vad_filter=True, beam_size=5,
+    )
+
+    lines: list[str] = []
+    boundaries: list[dict] = []
+    for seg in segments:
+        t = seg.text.strip()
+        if t:
+            lines.append(t)
+        for w in (seg.words or []):
+            word = w.word.strip()
+            if word:
+                boundaries.append({
+                    "text": word,
+                    "start": float(w.start),
+                    "end": float(w.end),
+                })
+
+    transcript = " ".join(lines)
+    script.write_text(transcript, encoding="utf-8")
+    bounds_path.write_text(json.dumps(boundaries, indent=1), encoding="utf-8")
+
+    words = len(transcript.split())
+    dur = info.duration
+    log(f"  transcript: {words} words, "
+        f"{int(dur // 60)}:{int(dur % 60):02d}, "
+        f"{len(boundaries)} word timestamps")
+    log(f"  wrote {script.name}  +  {bounds_path.name}")
+    return True
+
+
 def stage_script(proj: Path, m: dict, force: bool) -> bool:
     script = proj / m["audio"]["narration_script"]
+
+    # ── Native-audio mode: transcribe source with Whisper ───────────────────
+    source_raw = m["audio"].get("source")
+    if source_raw:
+        source_path = _resolve_source(proj, source_raw)
+        bounds = proj / "voice_boundaries.json"
+        if script.exists() and bounds.exists() and not force:
+            if newer(script, source_path):
+                words = len(script.read_text(encoding="utf-8").split())
+                log(f"  script.txt present ({words} words) - skipping")
+                return True
+        if not source_path.exists():
+            log(f"  ERROR: source audio not found: {source_path}")
+            return False
+        log(f"  transcribing {source_path.name} ...")
+        ensure("faster-whisper", "faster_whisper")
+        return _transcribe_to_script(source_path, script, bounds)
+    # ────────────────────────────────────────────────────────────────────────
+
     if script.exists() and not force:
         words = len(script.read_text(encoding="utf-8").split())
         log(f"  script.txt present ({words} words) - skipping")
@@ -122,6 +195,21 @@ def stage_images(proj: Path, m: dict, force: bool) -> bool:
 
 def stage_narration(proj: Path, m: dict, force: bool) -> bool:
     voice = proj / "voice.mp3"
+
+    # ── Native-audio mode: normalise source to voice.mp3, never call TTS ───
+    source_raw = m["audio"].get("source")
+    if source_raw:
+        source_path = _resolve_source(proj, source_raw)
+        if not source_path.exists():
+            log(f"  ERROR: source audio not found: {source_path}")
+            return False
+        if voice.exists() and not force and newer(voice, source_path):
+            log(f"  voice.mp3 is newer than source audio - skipping")
+            return True
+        return sh([py(), "-u", str(HELP / "make_narration.py"),
+                   "--manifest", str(proj / "manifest.json")]) == 0
+    # ────────────────────────────────────────────────────────────────────────
+
     bounds = proj / "voice_boundaries.json"
     script = proj / m["audio"]["narration_script"]
 
