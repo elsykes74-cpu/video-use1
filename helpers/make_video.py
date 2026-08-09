@@ -165,7 +165,8 @@ def stage_script(proj: Path, m: dict, force: bool) -> bool:
 
 
 def stage_images(proj: Path, m: dict, force: bool) -> bool:
-    missing = [s for s in m["scenes"] if not (proj / s["image"]).exists()]
+    missing = [s for s in m["scenes"]
+               if "video_clip" not in s and not (proj / s["image"]).exists()]
     if not missing and not force:
         log(f"  all {len(m['scenes'])} scene images present - skipping")
         return True

@@ -236,6 +236,23 @@ def clip_ok(path: Path, want: float, fps: int, tol: float = 0.25) -> bool:
 def build_clip(scene: dict, base: Path, out: Path, fmt: dict,
                overlay_cfg: dict, font: str | None, resume: bool = False) -> Path:
     W, H, FPS = fmt["width"], fmt["height"], fmt["fps"]
+
+    if "video_clip" in scene:
+        src = base / scene["video_clip"]
+        if not src.exists():
+            sys.exit(f"missing video clip: {src}")
+        if resume and clip_ok(out, scene["dur"], FPS):
+            print(f"  scene {scene['n']:>2}  reusing existing {out.name}")
+            return out
+        vf = (f"scale={W}:{H}:force_original_aspect_ratio=decrease,"
+              f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps={FPS}")
+        run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src),
+             "-vf", vf, "-t", f"{scene['dur']:.3f}",
+             "-c:v", "libx264", "-preset", PRESET, "-crf", str(CRF),
+             "-pix_fmt", "yuv420p", str(out)],
+            desc=f"scene {scene['n']:>3}  {scene['dur']:6.2f}s  video_clip      -> {out.name}")
+        return out
+
     img = base / scene["image"]
     if not img.exists():
         sys.exit(f"missing scene image: {img}")

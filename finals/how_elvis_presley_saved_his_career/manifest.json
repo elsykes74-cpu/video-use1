@@ -66,7 +66,9 @@
       "ken_burns": "hold",
       "weight": 38,
       "prompt": "A Hollywood film studio soundstage circa 1967: arc lights above, a painted tropical beach backdrop on the cyclorama, a dark-haired man in a bright Hawaiian print shirt holding a small dog, extras in swimsuits arranged in a semicircle, the manufactured cheerfulness of a production existing entirely outside of reality",
-      "refs": ["../../reference_library/elvis/1966_hollywood/"]
+      "refs": [
+        "../../reference_library/elvis/1966_hollywood/"
+      ]
     },
     {
       "n": 6,
@@ -102,6 +104,12 @@
       "ken_burns": "hold",
       "weight": 30,
       "prompt": "A transistor radio on a kitchen table in 1968: a teenage girl visible in the next room, the radio playing something vital and new, the gap between what the radio is playing and the world of five years ago implied entirely by her expression and the music posters on her wall"
+    },
+    {
+      "n": 110,
+      "video_clip": "scenes/narrator_01.mp4",
+      "weight": 22,
+      "ken_burns": "hold"
     },
     {
       "n": 11,
@@ -361,7 +369,9 @@
       "ken_burns": "hold",
       "weight": 42,
       "prompt": "A dark-haired man of thirty-three standing alone in a backstage corridor in a black leather suit: his hands not entirely still, his weight shifting slightly from foot to foot, his face showing the very specific fear of someone who has been away from something for a long time and is not entirely sure they still know how to do it",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 48,
@@ -369,7 +379,9 @@
       "ken_burns": "hold",
       "weight": 40,
       "prompt": "A dark-haired man in a black leather suit turning to the young director beside him in a backstage corridor: his expression asking a genuine question, the vulnerability completely real — what if I've lost it, what if this doesn't work, two men standing together before something irreversible",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 49,
@@ -384,7 +396,9 @@
       "ken_burns": "hold",
       "weight": 42,
       "prompt": "The first moment: a dark-haired man in a black leather suit stepping from a backstage corridor into the studio lights, his silhouette filling the doorframe before his face is visible, the audience in their folding chairs leaning forward almost in unison",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 51,
@@ -399,7 +413,9 @@
       "ken_burns": "hold",
       "weight": 40,
       "prompt": "A man in a black leather suit sitting in a folding chair with a guitar across his knee: completely still for one moment before the music starts, his eyes finding something in the middle distance, the last half-second before everything changes",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 53,
@@ -428,7 +444,9 @@
       "ken_burns": "hold",
       "weight": 42,
       "prompt": "A performer mid-song on a small stage: his posture visibly loosening as the song progresses, something releasing from his shoulders and face, the fear leaving his body in real time — the visual record of someone discovering in front of an audience that they can still do this",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 57,
@@ -436,7 +454,9 @@
       "ken_burns": "hold",
       "weight": 38,
       "prompt": "Sweat visible on a performer's face under hot studio lights: the shine on his forehead and jaw, the black leather suit holding the heat, the physical evidence of effort — the proof that this is not manufactured, the specific thing a television critic will later complain about without understanding why it matters",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 58,
@@ -458,7 +478,9 @@
       "ken_burns": "hold",
       "weight": 40,
       "prompt": "A performer driving a rhythm on an acoustic guitar he borrowed thirty seconds ago: his right hand hard on the strings, his body beginning to move the way it moved in 1955 when the music was new, the old electricity back in his hands",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 61,
@@ -480,7 +502,9 @@
       "ken_burns": "hold",
       "weight": 38,
       "prompt": "A choreographed production number on a full proscenium television stage: an elaborate set piece with large backlit signage, a full orchestra in the pit, a man in a white suit center stage — the produced segments of the special, the visible difference between this and the folding chairs",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 64,
@@ -488,7 +512,9 @@
       "ken_burns": "hold",
       "weight": 42,
       "prompt": "A performer in a white suit at a single television camera singing with ferocity that borders on desperation: his hands clenched, tears visible on his face, delivering the closing number of the broadcast — a song about peace and understanding that a powerful man in a fedora never wanted anyone to see",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 65,
@@ -517,6 +543,12 @@
       "ken_burns": "hold",
       "weight": 35,
       "prompt": "A stack of morning newspaper entertainment sections the day after the broadcast: headlines about the special, the word comeback appearing in several of them, the consensus forming in real time on newsprint, the critical rehabilitation visible as a physical stack of paper"
+    },
+    {
+      "n": 111,
+      "video_clip": "scenes/narrator_02.mp4",
+      "weight": 22,
+      "ken_burns": "hold"
     },
     {
       "n": 69,
@@ -552,7 +584,9 @@
       "ken_burns": "hold",
       "weight": 40,
       "prompt": "A dark-haired man of thirty-three arriving at a studio building in a commercial strip mall with his entourage behind him: taking in the modest exterior, a restaurant smell coming through the shared wall, his expression somewhere between skepticism and relief at finding something this unglamorous",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 74,
@@ -567,7 +601,9 @@
       "ken_burns": "hold",
       "weight": 40,
       "prompt": "A dark-haired man sitting down at an upright piano in a recording studio: the small risk taken in public, the act of choosing to work rather than to be served, the gesture of someone who has decided to be a musician in a room full of musicians",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 76,
@@ -617,7 +653,9 @@
       "ken_burns": "hold",
       "weight": 38,
       "prompt": "A dark-haired man stepping between two arguing groups in a recording studio: one hand raised, his posture calm and decisive — a man using the authority he actually has to serve the music rather than the people around him who are trying to interrupt it",
-      "refs": ["../../reference_library/elvis/1968_comeback/"]
+      "refs": [
+        "../../reference_library/elvis/1968_comeback/"
+      ]
     },
     {
       "n": 83,
@@ -681,7 +719,9 @@
       "ken_burns": "hold",
       "weight": 38,
       "prompt": "A jeweled jumpsuit on a dressing room hanger: rhinestones and elaborate embroidery under fluorescent lights, the collar high and structured, the garment growing more elaborate with each season — the outside expanding as the inside is being managed differently",
-      "refs": ["../../reference_library/elvis/1969_vegas/"]
+      "refs": [
+        "../../reference_library/elvis/1969_vegas/"
+      ]
     },
     {
       "n": 92,
@@ -710,7 +750,9 @@
       "ken_burns": "hold",
       "weight": 38,
       "prompt": "A dark-haired man in his late thirties in a Las Vegas dressing room between shows: stage makeup bright under fluorescent lights, a glass of water in his hand, the exhaustion that lives underneath the costume visible in the way he is holding his own weight",
-      "refs": ["../../reference_library/elvis/1974_vegas/"]
+      "refs": [
+        "../../reference_library/elvis/1974_vegas/"
+      ]
     },
     {
       "n": 96,
@@ -725,7 +767,9 @@
       "ken_burns": "hold",
       "weight": 40,
       "prompt": "A performer on a Las Vegas stage in the mid-1970s: the jumpsuit more elaborate, the silhouette heavier, the charisma still present but working harder now — the effort visible in a way it was not in a folding chair, the gap between what the performance costs and what it pays growing wider",
-      "refs": ["../../reference_library/elvis/1974_vegas/"]
+      "refs": [
+        "../../reference_library/elvis/1974_vegas/"
+      ]
     },
     {
       "n": 98,
