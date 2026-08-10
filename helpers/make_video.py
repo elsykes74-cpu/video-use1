@@ -185,7 +185,10 @@ def stage_images(proj: Path, m: dict, force: bool) -> bool:
             return False
         out = proj / s["image"]
         out.parent.mkdir(parents=True, exist_ok=True)
-        cmd = [py(), str(gen), "--prompt", prompt, "-o", str(out), "--aspect", "16:9"]
+        fmt = m.get("format", {})
+        W, H = fmt.get("width", 1920), fmt.get("height", 1080)
+        aspect = "9:16" if H > W else "16:9"
+        cmd = [py(), str(gen), "--prompt", prompt, "-o", str(out), "--aspect", aspect]
         for r in s.get("refs", []):
             cmd += ["--refs", str(proj / r)]
         if sh(cmd) != 0 or not out.exists():
@@ -221,7 +224,11 @@ def stage_narration(proj: Path, m: dict, force: bool) -> bool:
     if voice.exists() and not bounds.exists():
         log("  voice.mp3 exists but has no word boundaries; regenerating so "
             "captions can be exact")
-    ensure("edge-tts", "edge_tts")
+    provider = m["audio"].get("tts_provider", "edge")
+    if provider == "elevenlabs":
+        ensure("elevenlabs", "elevenlabs")
+    else:
+        ensure("edge-tts", "edge_tts")
     return sh([py(), "-u", str(HELP / "make_narration.py"),
                "--manifest", str(proj / "manifest.json")]) == 0
 

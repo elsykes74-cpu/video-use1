@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-"""Narration only — produces voice.mp3 from either a pre-recorded source or
-Edge TTS, depending on the manifest's audio configuration.
+"""Narration only — produces voice.mp3 from either a pre-recorded source,
+ElevenLabs TTS, or Edge TTS, depending on the manifest's audio configuration.
 
-Native-audio mode (audio.source present in manifest):
+Native-audio mode (audio.source present):
     Normalises the supplied file to 48 kHz stereo with loudnorm.  Never
     calls TTS.  Skips normalisation when voice.mp3 is already newer than the
     source.
 
-    python helpers/make_narration.py --manifest finals/<project>/manifest.json
+ElevenLabs mode (audio.tts_provider == "elevenlabs"):
+    Calls ElevenLabs with the named voice and captures character-level
+    alignment converted to word boundaries.  Requires ELEVENLABS_API_KEY env.
 
-TTS mode (no audio.source):
+Edge TTS mode (default, no source, no tts_provider):
     Generates voice.mp3 via Edge TTS and captures word-boundary events for
     exact caption timing.
 
-    python helpers/make_narration.py
+    python helpers/make_narration.py --manifest finals/<project>/manifest.json
     python helpers/make_narration.py --voice en-US-ChristopherNeural
     python helpers/make_narration.py --list-voices
 """
@@ -22,7 +24,9 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import base64
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -89,6 +93,102 @@ def native_audio_mode(source: Path, out: Path) -> int:
     return 0
 
 
+def elevenlabs_tts_mode(text: str, out: Path, boundaries_path: Path,
+                         voice_name: str, stability: float,
+                         similarity_boost: float, speed: float) -> int:
+    """Generate voice.mp3 via ElevenLabs and capture word boundaries.
+
+    Requires ELEVENLABS_API_KEY environment variable.
+    """
+    api_key = os.environ.get("ELEVENLABS_API_KEY")
+    if not api_key:
+        print("ERROR: ELEVENLABS_API_KEY environment variable not set", file=sys.stderr)
+        print("  set ELEVENLABS_API_KEY=your_key_here", file=sys.stderr)
+        return 1
+
+    try:
+        from elevenlabs.client import ElevenLabs
+        from elevenlabs import VoiceSettings
+    except ImportError:
+        print("ERROR: elevenlabs not installed.  Run:  pip install elevenlabs",
+              file=sys.stderr)
+        return 1
+
+    client = ElevenLabs(api_key=api_key)
+
+    print(f"looking up voice '{voice_name}' ...")
+    voices_resp = client.voices.get_all()
+    voice = next((v for v in voices_resp.voices
+                  if v.name.lower() == voice_name.lower()), None)
+    if voice is None:
+        names = sorted(v.name for v in voices_resp.voices)
+        print(f"ERROR: voice '{voice_name}' not found.", file=sys.stderr)
+        print(f"Available: {', '.join(names)}", file=sys.stderr)
+        return 1
+
+    print(f"voice       : {voice.name}  ({voice.voice_id})")
+    print(f"stability   : {stability}")
+    print(f"similarity  : {similarity_boost}")
+    print(f"speed       : {speed}")
+    print(f"writing     : {out}")
+    print(f"            : {boundaries_path.name}  (word timings)")
+    print("\ncontacting ElevenLabs ...")
+
+    try:
+        response = client.text_to_speech.convert_with_timestamps(
+            voice_id=voice.voice_id,
+            text=text,
+            voice_settings=VoiceSettings(
+                stability=stability,
+                similarity_boost=similarity_boost,
+                speed=speed,
+            ),
+            model_id="eleven_multilingual_v2",
+            output_format="mp3_44100_128",
+        )
+    except Exception as e:
+        print(f"\nERROR: ElevenLabs API failed: {type(e).__name__}: {e}",
+              file=sys.stderr)
+        return 2
+
+    audio_bytes = base64.b64decode(response.audio_base64)
+    out.write_bytes(audio_bytes)
+
+    # Convert character-level alignment to word boundaries (Edge TTS format)
+    al = response.alignment
+    boundaries: list[dict] = []
+    word = ""
+    word_start = 0.0
+    word_end = 0.0
+    for ch, s, e in zip(al.characters,
+                         al.character_start_times_seconds,
+                         al.character_end_times_seconds):
+        if ch in (" ", "\n", "\t", "\r"):
+            if word:
+                boundaries.append({"text": word, "start": word_start, "end": word_end})
+                word = ""
+        else:
+            if not word:
+                word_start = s
+            word += ch
+            word_end = e
+    if word:
+        boundaries.append({"text": word, "start": word_start, "end": word_end})
+
+    boundaries_path.write_text(json.dumps(boundaries, indent=1), encoding="utf-8")
+
+    size = out.stat().st_size
+    if size < 2000:
+        print("\nERROR: no usable audio produced.", file=sys.stderr)
+        return 3
+
+    dur = boundaries[-1]["end"] if boundaries else 0.0
+    print(f"\nOK  {out.name}  {size/1e6:.2f} MB  "
+          f"({int(dur//60)}:{int(dur%60):02d})")
+    print(f"captured {len(boundaries)} word boundaries")
+    return 0
+
+
 async def list_voices() -> int:
     import edge_tts
     vs = await edge_tts.list_voices()
@@ -139,6 +239,25 @@ def main() -> int:
             source_path = (base / source_path).resolve()
         out = args.out or (base / "voice.mp3")
         return native_audio_mode(source_path, out)
+    # ────────────────────────────────────────────────────────────────────────
+
+    # ── ElevenLabs mode ──────────────────────────────────────────────────────
+    if a.get("tts_provider") == "elevenlabs":
+        script = base / a["narration_script"]
+        if not script.exists():
+            print(f"ERROR: script not found: {script}", file=sys.stderr)
+            return 1
+        from make_video import ensure  # noqa: PLC0415
+        ensure("elevenlabs", "elevenlabs")
+        return elevenlabs_tts_mode(
+            text=script.read_text(encoding="utf-8"),
+            out=args.out or (base / "voice.mp3"),
+            boundaries_path=base / "voice_boundaries.json",
+            voice_name=args.voice or a.get("voice", "Ezra"),
+            stability=float(a.get("stability", 0.68)),
+            similarity_boost=float(a.get("similarity_boost", 0.65)),
+            speed=float(a.get("speed", 0.90)),
+        )
     # ────────────────────────────────────────────────────────────────────────
 
     # TTS mode: edge-tts required from here on.
