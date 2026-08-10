@@ -1,0 +1,183 @@
+{
+  "job_id": "elvis_comeback_68",
+  "title": "The Night Elvis Remembered Who He Was",
+  "channel": "The King Lives",
+  "niche": "elvis",
+  "format": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "aspect": "16:9"
+  },
+  "audio": {
+    "narration_script": "script.txt",
+    "tts_provider": "edge",
+    "voice": "en-US-GuyNeural",
+    "rate": "-10%",
+    "music_volume_under_speech": 0.1,
+    "music_volume_in_gaps": 0.22
+  },
+  "music": {
+    "crossfade": 3.0,
+    "cues": [
+      {
+        "file": "../../.verticals-src/music/cue1_cold_journey.mp3",
+        "from_scene": 1,
+        "to_scene": 6,
+        "gain": 1.0,
+        "mood": "cold, sparse — Scotty in Nashville, the origin, the years of absence"
+      },
+      {
+        "file": "../../.verticals-src/music/cue2_fake_it.mp3",
+        "from_scene": 7,
+        "to_scene": 11,
+        "gain": 0.9,
+        "mood": "restless — Binder's fight, the call, the Burbank session"
+      },
+      {
+        "file": "../../.verticals-src/music/cue3_requiem.mp3",
+        "from_scene": 12,
+        "to_scene": 14,
+        "gain": 1.0,
+        "mood": "elegiac — the broadcast, Las Vegas, the guitar in Cleveland"
+      }
+    ]
+  },
+  "transitions": {
+    "type": "fade",
+    "duration": 0.9
+  },
+  "text_overlay": {
+    "enabled": false
+  },
+  "captions": {
+    "enabled": true,
+    "words_per_line": 5,
+    "font_size": 42,
+    "primary_colour": "&H00FFFFFF",
+    "highlight_colour": "&H0027A9C9",
+    "outline_colour": "&H00000000",
+    "margin_v": 110
+  },
+  "pronunciation_fixes": [
+    {
+      "from": "Fontana",
+      "to": "Fon-TAH-nah"
+    },
+    {
+      "from": "Binder",
+      "to": "BYE-nder"
+    }
+  ],
+  "scenes": [
+    {
+      "n": 1,
+      "image": "scenes/scene_01.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "situation",
+      "overlay": "NASHVILLE. SUMMER 1968."
+    },
+    {
+      "n": 2,
+      "image": "scenes/scene_02.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "situation"
+    },
+    {
+      "n": 3,
+      "image": "scenes/scene_03.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "situation",
+      "overlay": "MEMPHIS. JULY 5, 1954."
+    },
+    {
+      "n": 4,
+      "image": "scenes/scene_04.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "situation"
+    },
+    {
+      "n": 5,
+      "image": "scenes/scene_05.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "desire"
+    },
+    {
+      "n": 6,
+      "image": "scenes/scene_06.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "desire",
+      "overlay": "OCTOBER 1965."
+    },
+    {
+      "n": 7,
+      "image": "scenes/scene_07.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "desire"
+    },
+    {
+      "n": 8,
+      "image": "scenes/scene_08.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "conflict"
+    },
+    {
+      "n": 9,
+      "image": "scenes/scene_09.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "conflict",
+      "overlay": "BURBANK. JUNE 27, 1968."
+    },
+    {
+      "n": 10,
+      "image": "scenes/scene_10.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "conflict"
+    },
+    {
+      "n": 11,
+      "image": "scenes/scene_11.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "change"
+    },
+    {
+      "n": 12,
+      "image": "scenes/scene_12.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "result",
+      "overlay": "DECEMBER 3, 1968."
+    },
+    {
+      "n": 13,
+      "image": "scenes/scene_13.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "result"
+    },
+    {
+      "n": 14,
+      "image": "scenes/scene_14.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "result"
+    }
+  ],
+  "_notes": [
+    "Weights are all 1 (placeholder). Run make_video.py once script is locked to",
+    "compute real weights from act word-counts the same way colonel_parker did.",
+    "scenes/ folder needs 14 images generated from prompts.txt before rendering.",
+    "Script runtime estimate: ~2,800 words at -10% rate ≈ 18-19 minutes."
+  ]
+}

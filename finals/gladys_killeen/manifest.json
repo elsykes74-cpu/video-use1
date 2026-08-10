@@ -1,0 +1,195 @@
+{
+  "job_id": "elvis_gladys_killeen",
+  "title": "The Woman He Could Never Stop Losing",
+  "channel": "The King Lives",
+  "niche": "elvis",
+  "format": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "aspect": "16:9"
+  },
+  "audio": {
+    "narration_script": "script.txt",
+    "tts_provider": "edge",
+    "voice": "en-US-GuyNeural",
+    "rate": "-10%",
+    "music_volume_under_speech": 0.1,
+    "music_volume_in_gaps": 0.22
+  },
+  "music": {
+    "crossfade": 3.0,
+    "cues": [
+      {
+        "file": "../../.verticals-src/music/cue1_cold_journey.mp3",
+        "from_scene": 1,
+        "to_scene": 5,
+        "gain": 1.0,
+        "mood": "cold, sparse — Fort Chaffee, Mississippi origins, the draft"
+      },
+      {
+        "file": "../../.verticals-src/music/cue2_fake_it.mp3",
+        "from_scene": 6,
+        "to_scene": 10,
+        "gain": 0.85,
+        "mood": "restless — the gate, the nightly calls, the hospital, the night she died"
+      },
+      {
+        "file": "../../.verticals-src/music/cue3_requiem.mp3",
+        "from_scene": 11,
+        "to_scene": 14,
+        "gain": 1.0,
+        "mood": "elegiac — the funeral, Germany, Graceland without her, the garden"
+      }
+    ]
+  },
+  "transitions": {
+    "type": "fade",
+    "duration": 0.9
+  },
+  "text_overlay": {
+    "enabled": false
+  },
+  "captions": {
+    "enabled": true,
+    "words_per_line": 5,
+    "font_size": 42,
+    "primary_colour": "&H00FFFFFF",
+    "highlight_colour": "&H0027A9C9",
+    "outline_colour": "&H00000000",
+    "margin_v": 110
+  },
+  "pronunciation_fixes": [
+    {
+      "from": "Pontotoc",
+      "to": "Pon-tuh-tock"
+    },
+    {
+      "from": "Satnin",
+      "to": "SAT-nin"
+    },
+    {
+      "from": "Nichopoulos",
+      "to": "Nick-op-uh-lus"
+    },
+    {
+      "from": "Goethestrasse",
+      "to": "GUH-teh-strassa"
+    }
+  ],
+  "scenes": [
+    {
+      "n": 1,
+      "image": "scenes/scene_01.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "situation",
+      "overlay": "FORT CHAFFEE, ARKANSAS. MARCH 1958."
+    },
+    {
+      "n": 2,
+      "image": "scenes/scene_02.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "situation",
+      "overlay": "PONTOTOC COUNTY, MISSISSIPPI. 1912."
+    },
+    {
+      "n": 3,
+      "image": "scenes/scene_03.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "situation"
+    },
+    {
+      "n": 4,
+      "image": "scenes/scene_04.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "situation",
+      "overlay": "DECEMBER 1957."
+    },
+    {
+      "n": 5,
+      "image": "scenes/scene_05.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "desire",
+      "overlay": "KILLEEN, TEXAS. SPRING 1958."
+    },
+    {
+      "n": 6,
+      "image": "scenes/scene_06.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "desire"
+    },
+    {
+      "n": 7,
+      "image": "scenes/scene_07.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "desire"
+    },
+    {
+      "n": 8,
+      "image": "scenes/scene_08.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "conflict",
+      "overlay": "METHODIST HOSPITAL. AUGUST 9, 1958."
+    },
+    {
+      "n": 9,
+      "image": "scenes/scene_09.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "conflict"
+    },
+    {
+      "n": 10,
+      "image": "scenes/scene_10.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "conflict",
+      "overlay": "GRACELAND. AUGUST 13."
+    },
+    {
+      "n": 11,
+      "image": "scenes/scene_11.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "change",
+      "overlay": "3:15 A.M. AUGUST 14, 1958."
+    },
+    {
+      "n": 12,
+      "image": "scenes/scene_12.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "result",
+      "overlay": "FOREST HILL CEMETERY. AUGUST 15."
+    },
+    {
+      "n": 13,
+      "image": "scenes/scene_13.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "result",
+      "overlay": "FRIEDBERG, GERMANY. 1958–1960."
+    },
+    {
+      "n": 14,
+      "image": "scenes/scene_14.jpg",
+      "ken_burns": "hold",
+      "weight": 1,
+      "beat": "result"
+    }
+  ],
+  "_notes": [
+    "Weights are all 1 (placeholder). Run make_video.py once script is locked to",
+    "compute real weights from act word-counts the same way colonel_parker did.",
+    "scenes/ folder needs 14 images generated from prompts.txt before rendering.",
+    "Script runtime estimate: ~3,000 words at -10% rate ≈ 19-20 minutes."
+  ]
+}

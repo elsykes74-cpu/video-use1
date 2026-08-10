@@ -1,0 +1,72 @@
+{
+  "job_id": "elvis_alice_cooper",
+  "title": "The Devil on the Shoulder",
+  "format": { "width": 1080, "height": 1920, "fps": 30 },
+  "audio": {
+    "narration_script": "script.txt",
+    "tts_provider": "elevenlabs",
+    "voice": "Ezra",
+    "stability": 0.68,
+    "similarity_boost": 0.65,
+    "speed": 0.90
+  },
+  "transitions": { "duration": 0.5 },
+  "text_overlay": {
+    "enabled": true,
+    "font_size": 58,
+    "font_color": "white",
+    "box_color": "black@0.0",
+    "start_offset": 1.0,
+    "fade_in": 0.4,
+    "hold": 10.0,
+    "fade_out": 0.4,
+    "max_chars_per_line": 22
+  },
+  "captions": { "enabled": false },
+  "music": { "cues": [] },
+  "scenes": [
+    {
+      "n": 1,
+      "image": "scenes/scene_001.jpg",
+      "ken_burns": "zoom_in_slow",
+      "weight": 18,
+      "overlay": "ELVIS WANTS TO MEET YOU.",
+      "prompt": "A 1970 Las Vegas hotel penthouse corridor at midnight: warm amber wallpaper and corridor lighting, two suited security guards professionally frisking elegantly dressed guests outside a suite door, the door slightly ajar with a sliver of warm light spilling out into the hallway. ARRI Alexa 35 emulation, 28mm wide lens, organic grain. The scene reads as glamorous, formal, and faintly surreal."
+    },
+    {
+      "n": 2,
+      "image": "scenes/scene_002.jpg",
+      "ken_burns": "hold",
+      "weight": 18,
+      "overlay": "POINT IT AT MY HEAD.",
+      "refs": ["../../reference_library/elvis/1969_vegas/"],
+      "prompt": "A dark-haired man in his mid-thirties standing at an open kitchen drawer in a 1970 Las Vegas hotel suite, extending a pistol toward someone off-camera with an expression of total relaxed ease — almost amused, completely in control. The kitchen is well-appointed, late night, one overhead fixture. He is not threatening. He is demonstrating. The gesture is casual in a way that makes it more unsettling. ARRI Alexa 35, 50mm, shallow depth of field, the extended hand catching the light."
+    },
+    {
+      "n": 3,
+      "image": "scenes/scene_003.jpg",
+      "ken_burns": "zoom_in_slow",
+      "weight": 20,
+      "overlay": "YOU'LL ALWAYS BE THE GUY WHO KILLED ELVIS.",
+      "refs": ["../../reference_library/elvis/1969_vegas/"],
+      "prompt": "Inside a 1970 Las Vegas hotel kitchen, two figures face each other across a short distance. A young dark-haired man in his twenties holds a pistol pointed at a larger, composed man opposite him who stands completely still, chin slightly raised, utterly unafraid. The young man's expression is a war between shock, dark humor, and disbelief. The composed man's expression is pure calm. The ordinary kitchen around them makes the scene more surreal. ARRI Alexa 35, 35mm, both figures in frame, high contrast single overhead light."
+    },
+    {
+      "n": 4,
+      "image": "scenes/scene_004.jpg",
+      "ken_burns": "hold",
+      "weight": 18,
+      "refs": ["../../reference_library/elvis/1969_vegas/"],
+      "prompt": "A dynamic action shot frozen at the peak moment of a flying kick inside a 1970 Las Vegas hotel kitchen: one man's boot connects with a pistol sending it spinning through the air, the other man is mid-fall off-balance with arms out. The kicker's posture is perfect — controlled, technical, a trained martial artist completely in command of his body. Kitchen details visible in background. ARRI Alexa 35, 24mm wide lens, slight motion blur on the spinning gun and falling figure, the kicker sharp and clear."
+    },
+    {
+      "n": 5,
+      "image": "scenes/scene_005.jpg",
+      "ken_burns": "pull_back",
+      "weight": 22,
+      "overlay": "SOMETIMES I THINK THE GUY WAS JUST LONELY.",
+      "refs": ["../../reference_library/elvis/1969_vegas/"],
+      "prompt": "A dark-haired man in his mid-thirties standing over a young man lying on a 1970 Las Vegas hotel kitchen floor, one boot resting lightly against the man's throat. The standing man looks down with an expression that is not anger, not triumph — it is calm, slightly warm, almost paternal. He has just demonstrated something. The man on the floor looks up stunned but unharmed. The scene reads as theater, as two men in a strange moment of connection. ARRI Alexa 35, low angle from the floor looking up, warm overhead kitchen light, the ceiling visible above."
+    }
+  ]
+}
