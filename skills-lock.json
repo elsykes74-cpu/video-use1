@@ -1,11 +1,35 @@
 {
   "version": 1,
   "skills": {
+    "canvas-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/canvas-design/SKILL.md",
+      "computedHash": "3fa7ea60170023ad8268bf9fd734ea75dd404279a2ef8ddf5abaa1102ad8e5f4"
+    },
+    "context-engineering-collection": {
+      "source": "muratcankoylan/agent-skills-for-context-engineering",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "1a2dbf15cf46137bae376d83c933068c72ddb96d5275e38cdf384b35793502e8"
+    },
     "openchatcut": {
       "source": "0xsline/OpenChatCut",
       "sourceType": "github",
       "skillPath": "skills/openchatcut/SKILL.md",
       "computedHash": "bda4257b68c6edeca57d87ee9c2c8eba5a5b54a2eedb36a6dd36ad3611943dab"
+    },
+    "skill-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/skill-creator/SKILL.md",
+      "computedHash": "5ea13a6d9f0d4bb694405d79acd00cadec0d21bb138c4dd10fcf3c500cb835c2"
+    },
+    "systematic-debugging": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/systematic-debugging/SKILL.md",
+      "computedHash": "a2750dfbaed1690da73b120254892c4f926b4576cb82eb16fc877783941fe39b"
     }
   }
 }
