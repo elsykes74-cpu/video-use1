@@ -1,0 +1,45 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 2160
+PlayResY: 3840
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,DejaVu Sans,140,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,2,0,1,10,1,2,80,80,900,1
+Style: Hook,DejaVu Sans,220,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,2,0,1,12,1,5,80,80,0,1
+Style: Outro,DejaVu Sans,180,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,2,0,1,10,1,5,80,80,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:01.80,Hook,,0,0,0,,HE WAS 15\NYEARS OLD.
+Dialogue: 0,0:00:01.74,0:00:02.24,Cap,,0,0,0,,STANDING ON
+Dialogue: 0,0:00:02.28,0:00:02.98,Cap,,0,0,0,,THE TONIGHT SHOW
+Dialogue: 0,0:00:03.04,0:00:03.75,Cap,,0,0,0,,STAGE.
+Dialogue: 0,0:00:03.86,0:00:04.28,Cap,,0,0,0,,IN FRONT OF
+Dialogue: 0,0:00:04.36,0:00:04.70,Cap,,0,0,0,,MILLIONS
+Dialogue: 0,0:00:04.70,0:00:05.60,Cap,,0,0,0,,OF PEOPLE.
+Dialogue: 0,0:00:05.96,0:00:06.26,Cap,,0,0,0,,THIS IS
+Dialogue: 0,0:00:06.34,0:00:07.10,Cap,,0,0,0,,{\c&H0000FFFF&}MICHAEL JACKSON{\c&H00FFFFFF&}
+Dialogue: 0,0:00:07.20,0:00:07.38,Cap,,0,0,0,,WITH THE
+Dialogue: 0,0:00:07.46,0:00:08.32,Cap,,0,0,0,,JACKSON FIVE,
+Dialogue: 0,0:00:08.94,0:00:10.16,Cap,,0,0,0,,{\c&H0000FFFF&}1974.{\c&H00FFFFFF&}
+Dialogue: 0,0:00:10.86,0:00:11.10,Cap,,0,0,0,,LOOK AT
+Dialogue: 0,0:00:11.10,0:00:11.74,Cap,,0,0,0,,THOSE EYES.
+Dialogue: 0,0:00:12.32,0:00:12.68,Cap,,0,0,0,,WATCH HOW
+Dialogue: 0,0:00:12.74,0:00:13.34,Cap,,0,0,0,,HE MOVES.
+Dialogue: 0,0:00:14.00,0:00:14.46,Cap,,0,0,0,,THAT IS NOT
+Dialogue: 0,0:00:14.50,0:00:15.30,Cap,,0,0,0,,A NERVOUS KID.
+Dialogue: 0,0:00:15.64,0:00:16.00,Cap,,0,0,0,,THAT IS A
+Dialogue: 0,0:00:16.06,0:00:17.16,Cap,,0,0,0,,{\c&H0000FFFF&}KING{\c&H00FFFFFF&}\NBEING CROWNED.
+Dialogue: 0,0:00:17.80,0:00:18.04,Cap,,0,0,0,,HE WAS
+Dialogue: 0,0:00:18.10,0:00:19.10,Cap,,0,0,0,,{\c&H0000FFFF&}15 YEARS OLD.{\c&H00FFFFFF&}
+Dialogue: 0,0:00:19.90,0:00:20.40,Cap,,0,0,0,,AND ALREADY
+Dialogue: 0,0:00:20.46,0:00:21.00,Cap,,0,0,0,,THE GREATEST
+Dialogue: 0,0:00:21.06,0:00:22.06,Cap,,0,0,0,,PERFORMER ALIVE.
+Dialogue: 0,0:00:22.78,0:00:23.22,Cap,,0,0,0,,SOME PEOPLE
+Dialogue: 0,0:00:23.24,0:00:23.84,Cap,,0,0,0,,ARE JUST BORN
+Dialogue: 0,0:00:23.90,0:00:24.22,Cap,,0,0,0,,FOR IT.
+Dialogue: 0,0:00:24.88,0:00:25.50,Cap,,0,0,0,,FOLLOW FOR MORE
+Dialogue: 0,0:00:25.58,0:00:26.80,Cap,,0,0,0,,MOMENTS LIKE THIS.
+Dialogue: 0,0:01:06.00,0:01:10.00,Outro,,0,0,0,,@mjforeverlove0

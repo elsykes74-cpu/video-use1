@@ -79,6 +79,8 @@ Helpers (`helpers/transcribe.py`, `helpers/render.py`, etc.) live alongside this
 - **`grade.py <in> -o <out>`** — ffmpeg filter chain grade. Presets + `--filter '<raw>'` for custom.
 - **`ken_burns.py <photo> -o <clip.mp4>`** — convert a still photo to a video clip with Ken Burns zoom/pan motion. `--effect zoom_in|zoom_out|pan_right|pan_left|pan_up|ken_burns`. `--duration` (default 6s). `--size 1080x1920` for vertical output. `--batch` to process a whole folder of images. Output is a standard MP4 with silent audio — drop it into `sources` in `edl.json` like any video clip.
 - **`youtube_stats.py`** — fetch YouTube channel analytics via YouTube Data API v3. Reads `YOUTUBE_API_KEY` / `YOUTUBE_CHANNEL_ID` from `.env`. Outputs channel overview (subscribers, total views, video count) + per-video stats (views, likes, comments) for recent uploads. `--max-videos N` (default 5). Also importable: `channel_stats(key, id)` and `recent_videos(key, id, n)` return dicts for programmatic use.
+- **`notebooklm_research.py <topic>`** — NotebookLM-style deep research using Gemini API. Reads `GEMINI_API_KEY` from `.env`. Outputs `research/<slug>.json` containing: research summary, 5 emotional angles, N voiceover scripts (timed, word-counted), TikTok title/description/hashtags/pinned comment. `--scripts N` (default 3). Run before every new video to generate ready-to-paste ElevenLabs scripts.
+- **`download_reference.py <url_or_query>`** — Download YouTube videos or audio for reference material using yt-dlp. Saves to `reference/<slug>/` with metadata JSON. `--search` to search by keyword instead of URL. `--audio-only` for MP3. `--max N` for multiple results. Use to pull concert footage, interviews, or tour documentation for research.
 
 For animations, create `<edit>/animations/slot_<id>/` with `Bash` and spawn a sub-agent via the `Agent` tool.
 
@@ -305,6 +307,132 @@ Append one section per session at `<edit>/project.md`:
 ```
 
 On startup, read `project.md` if it exists and summarize the last session in one sentence before asking whether to continue.
+
+## FOREVER MICHAEL TikTok Workflow
+
+End-to-end pipeline for turning raw TikTok concert footage into a branded, narrated, captioned 4K post.
+
+### Pipeline (in order)
+
+**0. Research & Script (NotebookLM)**
+Before touching any video, build your script in [NotebookLM](https://notebooklm.google.com):
+
+1. **Create a notebook** for the specific MJ era/tour/moment
+2. **Upload sources** — Wikipedia articles, concert reviews, fan accounts, interview transcripts, setlists, tour programs. The more specific the better (e.g. "HIStory World Tour 1996-97 fan reactions")
+3. **Generate the script** using this prompt template:
+```
+Write a 25-30 second emotional voiceover narration for a TikTok video showing [DESCRIBE THE FOOTAGE — e.g. "Michael Jackson pulling a fan onto the stage during the HIStory tour and embracing her while the crowd goes wild"].
+
+Tone: cinematic, reverent, second-person. Make the viewer feel like THEY are in that moment.
+Structure: hook question → what's happening → emotional impact → legacy line
+Style: short punchy sentences. No filler. Every word earns its place.
+Do NOT mention song titles or dates — keep it timeless.
+End with a line about how we still feel this today.
+```
+4. **Refine** — ask follow-up questions: "make it more emotional", "shorten to 20 seconds", "make the hook stronger"
+5. **Use Audio Overview** to hear a two-person conversation about the footage context — mine it for angles and facts you hadn't considered
+6. Copy the final script → paste into ElevenLabs (Step 5)
+
+**NotebookLM source library to build over time:**
+- MJ HIStory tour reviews + setlists
+- MJ Dangerous tour documentation
+- Rolling Stone / NME concert reviews
+- Fan accounts from r/MichaelJackson
+- MJ interviews about connecting with fans
+- Grammy / award show performance transcripts
+
+**1. Ingest**
+- Accept upload or Google Drive link (`gdown` for Drive: `gdown --fuzzy "<share_url>" -O input.mp4`)
+- Probe with static FFmpeg ffprobe: dimensions, duration, codec
+- Static FFmpeg lives in scratchpad at `ffmpeg-7.0.2-amd64-static/` (downloaded from johnvansickle.com if not present)
+
+**2. Watermark removal**
+- User annotates screenshot with red circle around watermark
+- Extract a frame, eyeball coordinates → `crop=W:H:X:Y`
+- FFmpeg filter: `split[base][wm];[wm]crop=W:H:X:Y,boxblur=15:5[blurred];[base][blurred]overlay=X:Y`
+- Use `boxblur`, NOT `avgblur` (avgblur absent in static FFmpeg 7.0.2)
+
+**3. FOREVER MICHAEL logo overlay**
+- Logo: white-on-black PNG (`79239fd0-1000086052.jpg` in uploads)
+- Make black transparent with PIL (`pixels where R,G,B < 40 → alpha=0`)
+- Scale to ~180px wide, place centered over watermark coordinates
+- FFmpeg: `[0:v]split[base][bg];[bg]crop=...,boxblur=...[blurred];[base][blurred]overlay=...[cleaned];[1:v]scale=180:179[logo];[cleaned][logo]overlay=X:Y`
+
+**4. Build 3-segment structure**
+
+| Segment | Duration | Source |
+|---|---|---|
+| Intro title card | 9s | PIL-rendered PNG → `-loop 1` FFmpeg, fade in/out |
+| Main footage | original × 1.25 (~80% speed) | `setpts=1.25*PTS`, `atempo=0.8`, `volume=0.25` |
+| FOREVER MICHAEL outro | 9s | Logo centered on black PNG → `-loop 1` FFmpeg |
+
+Concat with `ffmpeg -f concat -safe 0 -i list.txt`
+
+Intro card style: black background, white regular font top lines, gold bold (`255,215,80`) on "Michael Jackson?", PIL DejaVuSans-Bold, centered, y≈780/855/940 in 1080×1920
+
+**5. ElevenLabs voiceover**
+- Key: `ELEVENLABS_API_KEY` in `.env`
+- Voice: **Young Jamal** — `voice_id: 6OzrBCQf8cjERkYgzSg8`
+- Endpoint: `POST /v1/text-to-speech/{voice_id}/with-timestamps` → returns `audio_base64` + `alignment`
+- Settings: `stability=0.45, similarity_boost=0.80, style=0.35, use_speaker_boost=True`
+- Model: `eleven_multilingual_v2`
+- The `alignment` dict has `characters`, `character_start_times_seconds`, `character_end_times_seconds`
+
+**6. ASS captions from alignment**
+- Group characters → words (split on space/newline)
+- Chunk 4 words per caption line, ALL CAPS
+- Add `VO_DELAY` (2.0s) to all timestamps
+- ASS style for 4K (PlayResX=1080, PlayResY=1920):
+```
+Style: Cap,DejaVu Sans,62,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,1,0,0,0,100,100,2,0,1,4,2,2,40,40,720,1
+```
+- `MarginV=720` → captions land just below center (1920-720=1200px from top = 62% down), above TikTok UI
+- `MarginV=80` → bottom of frame (for reference)
+- Use `ass` filter NOT `subtitles` filter (subtitles silently fails in some builds)
+
+**7. Audio auto-duck mix**
+VO starts at t=2s (adelay=2000ms), ends at `VO_duration + 2.0s`.
+```
+[bg_audio]volume=volume='if(lt(t,2),4.0,if(lte(t,VO_END),0.32,if(lte(t,VO_END+2),(t-VO_END)/2.0*3.68+0.32,4.0)))':eval=frame[bg];
+[vo]adelay=2000|2000,volume=1.0[vo];
+[bg][vo]amix=inputs=2:duration=first:dropout_transition=1[mixed]
+```
+- `4.0x` of NO_VO audio = 100% original (crowd at 25% in seg_main × 4 = 100%)
+- `0.32x` = ~8% original (ducked under narrator)
+- 2-second ramp back up after VO ends
+
+**8. 4K encode**
+- Upscale: `scale=2160:3840:flags=lanczos`
+- Codec: `libx265 -preset fast -crf 28 -pix_fmt yuv420p -tag:v hvc1`
+- Audio: `aac -b:a 192k`
+- Target file size: ~28MB for 70s at these settings (fits 30MB SendUserFile limit)
+- Encode time: ~6 min at 4K H.265 on CPU
+
+**9. TikTok copy formula**
+- **Title**: hook question or dramatic statement (first line = TikTok Title field)
+- **Description**: mirrors the VO script, 3-5 short paragraphs
+- **Hashtags**: `#MichaelJackson #MJForever #ForeverMichael #KingOfPop #Legend #MJ #17Years #Concert #GOAT #fyp #foryou #viral #mjconcert #michaeljacksonfan #iconic #emotional #mjhistory #neverforget #mjlove`
+- **Pinned comment**: question that drives replies + emoji reaction (e.g. "Drop a 🕊️ if you would have passed out 😭 What song was he performing? 👇")
+
+### Key assets
+- FOREVER MICHAEL logo: `uploads/79239fd0-1000086052.jpg` (white silhouette + text on black)
+- Young Jamal voice ID: `6OzrBCQf8cjERkYgzSg8`
+- Static FFmpeg: download from `https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz`
+
+### Voiceover script template (MJ concert fan-pull moment)
+```
+Imagine standing in a crowd of 70,000 people...
+and suddenly, Michael Jackson points at you.
+Not the person next to you. You.
+This is what that moment looked like.
+This is what his music did to people — it didn't just move you.
+It broke you open.
+Tears. Screaming. Strangers holding each other like family.
+No stage, no screen, no algorithm has ever touched what Michael created in that room.
+This wasn't a concert.
+This was a religious experience.
+And 17 years later... we're still not over it.
+```
 
 ## Anti-patterns
 
