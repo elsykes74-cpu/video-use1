@@ -1,0 +1,102 @@
+name: real-estate
+description: Real estate listing video — property showcase for MLS, Zillow, social, or direct client use.
+
+video:
+  target_duration_seconds: 90  # 60–120s sweet spot for listings
+  aspect_ratio: "16:9"          # landscape for MLS/website embed
+  format: "landscape HD"
+  # For social (Instagram/TikTok Reels), override to 9:16 and ~30–45s
+
+script:
+  tone: "warm, confident, aspirational — sell the lifestyle, not just the rooms"
+  pacing: "measured but forward-moving; let the property breathe visually"
+  perspective: "listing agent or property storyteller speaking to a qualified buyer"
+  word_count: 120
+  hooks:
+    - "Imagine waking up every morning to..."
+    - "This is the home you've been waiting for..."
+    - "Tucked in [neighborhood], this [beds]-bed [style] is..."
+    - "Every detail of this home was designed to..."
+    - "From the moment you walk through the door..."
+    - "This isn't just a house — it's a lifestyle. Here's..."
+  structure:
+    opening: "Immediate visual anchor — the strongest exterior shot or hero room — with a hook line that sells the feeling"
+    middle: "Room-by-room tour in a natural walkthrough sequence: entry → living → kitchen → primary suite → outdoor space"
+    closing: "Address, price or 'priced to move', agent contact, CTA (schedule a showing)"
+  cta_variants:
+    - "Showings by appointment — link in bio."
+    - "Call [Agent] at [number] to schedule your private tour."
+    - "Scan the QR code for the full virtual tour."
+    - "DM us to book a showing before it's gone."
+  forbidden_phrases:
+    - "in today's video"
+    - "don't forget to like and subscribe"
+    - "without further ado"
+    - "let's dive in"
+    - "hey guys"
+    - "cozy" # overused; replace with "intimate", "inviting", "warm"
+    - "motivated seller" # never in video copy
+
+visual:
+  style: "clean, bright, aspirational architectural photography aesthetic"
+  mood: "warm, airy, move-in-ready — morning or golden-hour light preferred"
+  grade_preset: "warm_cinematic"  # warm shadows, lifted midtones, gentle highlights
+  ken_burns_default: "zoom_in"    # slow push in on stills; alternate with pan_right on wide exteriors
+  subjects:
+    - "sun-drenched living rooms with natural light pouring through windows"
+    - "kitchen islands with stone countertops and pendant lighting"
+    - "primary bedrooms with layered natural and soft artificial light"
+    - "manicured exterior landscaping and curb appeal"
+    - "backyard and outdoor entertaining spaces — patios, pools, pergolas"
+    - "neighborhood lifestyle — walkable streets, parks, coffee shops"
+    - "architectural details — crown molding, built-ins, fireplaces, hardware"
+    - "bathroom tile work, soaking tubs, frameless glass shower enclosures"
+  avoid_subjects:
+    - "clutter, personal belongings, or non-staged rooms"
+    - "unflattering overhead lighting without supplemental fill"
+    - "occupied rooms with people in frame (unless intentionally lifestyle content)"
+    - "vehicles in driveways unless part of a lifestyle exterior shot"
+  prompt_suffix: "architectural photography, warm natural light, bright airy interiors, soft shadows, muted elegant color palette, magazine-quality staging"
+
+voice:
+  pace: "measured"
+  energy: "medium"
+  suggested_voices:
+    edge: "en-US-JennyNeural"
+    elevenlabs: "ThT5KcBeYPX3keUQqHPh"  # Dorothy — warm, professional, trustworthy
+
+captions:
+  font: "Helvetica"
+  highlight_color: "#C9A96E"  # warm gold — reads well over both light and dark frames
+  position: "lower_third"
+
+music:
+  mood: "warm, upscale, aspirational — think luxury hotel lobby or Sunday morning"
+  energy: "low-medium"
+  duck_factor: 0.08  # music stays present but voice is primary
+
+thumbnail:
+  layout: "title_lower_third"
+  text_position: "bottom"
+  color_scheme:
+    primary: "#FFFFFF"
+    secondary: "#C9A96E"
+    background: "#1a1a1a"
+
+# ── Editing notes for this content type ────────────────────────────────────────
+#
+# Photo-heavy listings: use ken_burns.py --batch to animate stills before
+# building the EDL. Alternate zoom_in / pan_right / zoom_out every 2–3 clips
+# to avoid monotony. Typical per-shot duration: 4–7 seconds.
+#
+# Video walkthroughs: cut on natural door-crosses and camera moves; keep each
+# room to 8–15 seconds. Transition on the 30ms audio fade (already applied by
+# the render pipeline) — no cross-dissolve needed unless the client requests it.
+#
+# Talking-head agent intro/outro: transcribe separately, keep to 10–15s each.
+# Bracket the property tour between them.
+#
+# Aspect ratio for social repurpose: after the 16:9 final is approved, crop
+# the same EDL to 9:16 with a "crop=1080:1920:(iw-1080)/2:(ih-1920)/2"
+# grade filter override. Primary bedrooms and kitchens re-crop best; wide
+# exteriors lose context and may need a tighter cut point.
